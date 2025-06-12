@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
+import '../teacher/classes_screen.dart';
+import '../teacher/attendance_screen.dart';
+import '../teacher/grades_screen.dart';
+import '../teacher/assignments_screen.dart';
+import '../teacher/messages_screen.dart';
+import '../teacher/profile_screen.dart';
+import '../teacher/schedule_screen.dart';
+import '../teacher/notes_screen.dart';
 
 class TeacherDashboard extends StatefulWidget {
   const TeacherDashboard({Key? key}) : super(key: key);
@@ -13,11 +21,13 @@ class TeacherDashboard extends StatefulWidget {
 class _TeacherDashboardState extends State<TeacherDashboard>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   late AnimationController _animationController;
   late AnimationController _counterController;
   late AnimationController _fabController;
   late AnimationController _scheduleController;
-  
+
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
@@ -126,45 +136,37 @@ class _TeacherDashboardState extends State<TeacherDashboard>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+      ),
+    );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
+      ),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
+      ),
+    );
 
-    _counterAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _counterController,
-      curve: Curves.easeOutCubic,
-    ));
+    _counterAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _counterController, curve: Curves.easeOutCubic),
+    );
 
-    _scheduleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scheduleController,
-      curve: Curves.easeOutCubic,
-    ));
+    _scheduleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _scheduleController, curve: Curves.easeOutCubic),
+    );
 
     _animationController.forward();
     _counterController.forward();
@@ -176,7 +178,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
     setState(() {
       _selectedIndex = index;
     });
-    
+
     // Reset animations for new tab
     _animationController.reset();
     _animationController.forward();
@@ -187,7 +189,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
     _fabController.forward().then((_) {
       _fabController.reverse();
     });
-    
+
     _showQuickActionSheet();
   }
 
@@ -195,13 +197,72 @@ class _TeacherDashboardState extends State<TeacherDashboard>
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => _buildQuickActionSheet(),
+      isScrollControlled: true,
+      builder: (context) => _buildQuickActionSheet(context),
+    );
+  }
+
+  // Navigation methods
+  void _navigateToTakeAttendance() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AttendanceScreen()),
+    );
+  }
+
+  void _navigateToAddAssignment() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AssignmentsScreen()),
+    );
+  }
+
+  void _navigateToGradePapers() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const GradesScreen()),
+    );
+  }
+
+  void _navigateToMessageParents() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MessagesScreen()),
+    );
+  }
+
+  void _navigateToClassNotes() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NotesScreen()),
+    );
+  }
+
+  void _navigateToSchedule() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+    );
+  }
+
+  void _openDrawer() {
+    HapticFeedback.lightImpact();
+    _scaffoldKey.currentState?.openDrawer();
+  }
+
+  void _openNotifications() {
+    HapticFeedback.lightImpact();
+    showDialog(
+      context: context,
+      builder: (context) => _buildNotificationsDialog(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: _buildDrawer(),
       body: AnimatedBuilder(
         animation: _animationController,
         builder: (context, child) {
@@ -215,10 +276,10 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                   index: _selectedIndex,
                   children: [
                     _buildHomeTab(),
-                    _buildClassesTab(),
-                    _buildAttendanceTab(),
-                    _buildGradesTab(),
-                    _buildProfileTab(),
+                    const ClassesScreen(),
+                    const AttendanceScreen(),
+                    const GradesScreen(),
+                    const ProfileScreen(),
                   ],
                 ),
               ),
@@ -232,16 +293,147 @@ class _TeacherDashboardState extends State<TeacherDashboard>
     );
   }
 
+  Widget _buildDrawer() {
+    return Drawer(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppTheme.teacherColor.withOpacity(0.1), Colors.white],
+          ),
+        ),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.teacherColor,
+                    AppTheme.teacherColor.withOpacity(0.8),
+                  ],
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white.withOpacity(0.2),
+                    child: const Icon(
+                      Icons.person,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Sarah Wilson',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    'Mathematics Teacher',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+            _buildDrawerItem(
+              icon: Icons.dashboard_rounded,
+              title: 'Dashboard',
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _selectedIndex = 0);
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.class_rounded,
+              title: 'My Classes',
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _selectedIndex = 1);
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.assignment_rounded,
+              title: 'Assignments',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToAddAssignment();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.schedule_rounded,
+              title: 'Schedule',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToSchedule();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.note_alt_rounded,
+              title: 'Class Notes',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToClassNotes();
+              },
+            ),
+            const Divider(),
+            _buildDrawerItem(
+              icon: Icons.settings_rounded,
+              title: 'Settings',
+              onTap: () {
+                Navigator.pop(context);
+                // Navigate to settings
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.help_outline_rounded,
+              title: 'Help & Support',
+              onTap: () {
+                Navigator.pop(context);
+                // Navigate to help
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.logout_rounded,
+              title: 'Logout',
+              onTap: () {
+                Navigator.pop(context);
+                _showLogoutDialog();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: AppTheme.teacherColor),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+      onTap: onTap,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    );
+  }
+
   Widget _buildHomeTab() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            AppTheme.teacherColor.withOpacity(0.05),
-            Colors.white,
-          ],
+          colors: [AppTheme.teacherColor.withOpacity(0.05), Colors.white],
         ),
       ),
       child: CustomScrollView(
@@ -276,6 +468,33 @@ class _TeacherDashboardState extends State<TeacherDashboard>
       pinned: true,
       elevation: 0,
       backgroundColor: Colors.transparent,
+      leading: IconButton(
+        icon: const Icon(Icons.menu_rounded, color: Colors.white),
+        onPressed: _openDrawer,
+      ),
+      actions: [
+        IconButton(
+          icon: Stack(
+            children: [
+              const Icon(Icons.notifications_rounded, color: Colors.white),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          onPressed: _openNotifications,
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
@@ -363,7 +582,9 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                               children: [
                                 Text(
                                   'Teacher Dashboard',
-                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineMedium?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w800,
                                   ),
@@ -371,43 +592,10 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                                 const SizedBox(height: 4),
                                 Text(
                                   'Inspiring Young Minds',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium?.copyWith(
                                     color: Colors.white.withOpacity(0.9),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Message icon
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.message_rounded,
-                                  color: Colors.white,
-                                  size: 24,
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                    ),
                                   ),
                                 ),
                               ],
@@ -427,74 +615,76 @@ class _TeacherDashboardState extends State<TeacherDashboard>
   }
 
   Widget _buildWelcomeCard() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white,
-            Colors.grey.shade50,
+    return GestureDetector(
+      onTap: () => setState(() => _selectedIndex = 4), // Navigate to profile
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [Colors.white, Colors.grey.shade50]),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Good morning, Teacher! 🌟',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF2D3748),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Good morning, Teacher! 🌟',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF2D3748),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'You have 4 classes scheduled for today',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF4A5568),
+                  const SizedBox(height: 8),
+                  Text(
+                    'You have 4 classes scheduled for today',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xFF4A5568),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    _buildQuickMetric('Next Class', '10:00 AM', Icons.schedule_rounded),
-                    const SizedBox(width: 16),
-                    _buildQuickMetric('Room', 'Lab 201', Icons.room_rounded),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.teacherColor.withOpacity(0.2),
-                  AppTheme.teacherColor.withOpacity(0.1),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _buildQuickMetric(
+                        'Next Class',
+                        '10:00 AM',
+                        Icons.schedule_rounded,
+                      ),
+                      const SizedBox(width: 16),
+                      _buildQuickMetric('Room', 'Lab 201', Icons.room_rounded),
+                    ],
+                  ),
                 ],
               ),
-              borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(
-              Icons.school_rounded,
-              color: AppTheme.teacherColor,
-              size: 40,
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.teacherColor.withOpacity(0.2),
+                    AppTheme.teacherColor.withOpacity(0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.school_rounded,
+                color: AppTheme.teacherColor,
+                size: 40,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -505,9 +695,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
       decoration: BoxDecoration(
         color: AppTheme.teacherColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppTheme.teacherColor.withOpacity(0.2),
-        ),
+        border: Border.all(color: AppTheme.teacherColor.withOpacity(0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -527,10 +715,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
               ),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -540,240 +725,271 @@ class _TeacherDashboardState extends State<TeacherDashboard>
   }
 
   Widget _buildTodayScheduleCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.today_rounded,
-                color: AppTheme.teacherColor,
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Today\'s Schedule',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF2D3748),
+    return GestureDetector(
+      onTap: _navigateToSchedule,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.today_rounded,
+                  color: AppTheme.teacherColor,
+                  size: 24,
                 ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.successColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                const SizedBox(width: 8),
+                Text(
+                  'Today\'s Schedule',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF2D3748),
+                  ),
                 ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.successColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${_todaySchedule.length} Classes',
+                    style: TextStyle(
+                      color: AppTheme.successColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            AnimatedBuilder(
+              animation: _scheduleController,
+              builder: (context, child) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount:
+                      _todaySchedule.length > 2 ? 2 : _todaySchedule.length,
+                  separatorBuilder:
+                      (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    return TweenAnimationBuilder<double>(
+                      duration: Duration(milliseconds: 400 + (index * 100)),
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, value, child) {
+                        return Transform.translate(
+                          offset: Offset(30 * (1 - value), 0),
+                          child: Opacity(
+                            opacity: value,
+                            child: _buildScheduleItem(_todaySchedule[index]),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+            if (_todaySchedule.length > 2) ...[
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: _navigateToSchedule,
                 child: Text(
-                  '${_todaySchedule.length} Classes',
+                  'View All Classes',
                   style: TextStyle(
-                    color: AppTheme.successColor,
+                    color: AppTheme.teacherColor,
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
                   ),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 20),
-          AnimatedBuilder(
-            animation: _scheduleController,
-            builder: (context, child) {
-              return ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _todaySchedule.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  return TweenAnimationBuilder<double>(
-                    duration: Duration(milliseconds: 400 + (index * 100)),
-                    tween: Tween(begin: 0.0, end: 1.0),
-                    curve: Curves.easeOutCubic,
-                    builder: (context, value, child) {
-                      return Transform.translate(
-                        offset: Offset(30 * (1 - value), 0),
-                        child: Opacity(
-                          opacity: value,
-                          child: _buildScheduleItem(_todaySchedule[index]),
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildScheduleItem(Map<String, dynamic> schedule) {
     final bool isCurrent = schedule['status'] == 'current';
-    final Color statusColor = isCurrent ? AppTheme.successColor : AppTheme.teacherColor;
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isCurrent
-              ? [
-                  AppTheme.successColor.withOpacity(0.1),
-                  AppTheme.successColor.withOpacity(0.05),
-                ]
-              : [
-                  AppTheme.teacherColor.withOpacity(0.05),
-                  Colors.transparent,
-                ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: statusColor.withOpacity(0.2),
-          width: isCurrent ? 2 : 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Time column
-          Container(
-            width: 60,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  schedule['time'],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: statusColor,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  schedule['duration'],
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
+    final Color statusColor =
+        isCurrent ? AppTheme.successColor : AppTheme.teacherColor;
+
+    return GestureDetector(
+      onTap: () {
+        // Navigate to specific class details
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ClassesScreen()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors:
+                isCurrent
+                    ? [
+                      AppTheme.successColor.withOpacity(0.1),
+                      AppTheme.successColor.withOpacity(0.05),
+                    ]
+                    : [
+                      AppTheme.teacherColor.withOpacity(0.05),
+                      Colors.transparent,
+                    ],
           ),
-          
-          const SizedBox(width: 16),
-          
-          // Subject details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  schedule['subject'],
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF2D3748),
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.class_rounded,
-                      size: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      schedule['class'],
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Icon(
-                      Icons.room_rounded,
-                      size: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      schedule['room'],
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: statusColor.withOpacity(0.2),
+            width: isCurrent ? 2 : 1,
           ),
-          
-          // Students count and action
-          Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.people_rounded,
-                      size: 12,
-                      color: statusColor,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${schedule['studentsCount']}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: statusColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isCurrent) ...[
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.successColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'LIVE',
+        ),
+        child: Row(
+          children: [
+            // Time column
+            Container(
+              width: 60,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    schedule['time'],
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
                       fontWeight: FontWeight.bold,
+                      color: statusColor,
+                      fontSize: 14,
                     ),
                   ),
+                  Text(
+                    schedule['duration'],
+                    style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 16),
+
+            // Subject details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    schedule['subject'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF2D3748),
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.class_rounded,
+                        size: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        schedule['class'],
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Icon(
+                        Icons.room_rounded,
+                        size: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        schedule['room'],
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Students count and action
+            Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.people_rounded, size: 12, color: statusColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${schedule['studentsCount']}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: statusColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                if (isCurrent) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.successColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'LIVE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ],
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -791,19 +1007,40 @@ class _TeacherDashboardState extends State<TeacherDashboard>
       itemCount: _statsData.length,
       itemBuilder: (context, index) {
         final stat = _statsData[index];
-        return _buildAnimatedStatCard(stat, index);
+        return GestureDetector(
+          onTap: () => _navigateToStatDetail(stat['title']),
+          child: _buildAnimatedStatCard(stat, index),
+        );
       },
     );
+  }
+
+  void _navigateToStatDetail(String statTitle) {
+    switch (statTitle) {
+      case 'My Classes':
+        setState(() => _selectedIndex = 1);
+        break;
+      case 'Total Students':
+        setState(() => _selectedIndex = 1);
+        break;
+      case 'Assignments':
+        _navigateToAddAssignment();
+        break;
+      case 'Avg Attendance':
+        setState(() => _selectedIndex = 2);
+        break;
+    }
   }
 
   Widget _buildAnimatedStatCard(Map<String, dynamic> stat, int index) {
     return AnimatedBuilder(
       animation: _counterController,
       builder: (context, child) {
-        final animatedValue = stat['title'] == 'Avg Attendance'
-            ? (stat['value'] * _counterAnimation.value).round()
-            : (stat['value'] * _counterAnimation.value).round();
-        
+        final animatedValue =
+            stat['title'] == 'Avg Attendance'
+                ? (stat['value'] * _counterAnimation.value).round()
+                : (stat['value'] * _counterAnimation.value).round();
+
         return TweenAnimationBuilder<double>(
           duration: Duration(milliseconds: 800 + (index * 200)),
           tween: Tween(begin: 0.0, end: 1.0),
@@ -852,7 +1089,9 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: (stat['color'] as Color).withOpacity(0.3),
+                                color: (stat['color'] as Color).withOpacity(
+                                  0.3,
+                                ),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -866,11 +1105,15 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                         ),
                         const Spacer(),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: (stat['isPositive'] as bool)
-                                ? Colors.green.withOpacity(0.1)
-                                : Colors.red.withOpacity(0.1),
+                            color:
+                                (stat['isPositive'] as bool)
+                                    ? Colors.green.withOpacity(0.1)
+                                    : Colors.red.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -881,9 +1124,10 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                                     ? Icons.trending_up_rounded
                                     : Icons.trending_down_rounded,
                                 size: 12,
-                                color: (stat['isPositive'] as bool)
-                                    ? Colors.green
-                                    : Colors.red,
+                                color:
+                                    (stat['isPositive'] as bool)
+                                        ? Colors.green
+                                        : Colors.red,
                               ),
                               const SizedBox(width: 2),
                               Text(
@@ -891,9 +1135,10 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: (stat['isPositive'] as bool)
-                                      ? Colors.green
-                                      : Colors.red,
+                                  color:
+                                      (stat['isPositive'] as bool)
+                                          ? Colors.green
+                                          : Colors.red,
                                 ),
                               ),
                             ],
@@ -903,10 +1148,12 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                     ),
                     const Spacer(),
                     Text(
-                      stat['title'] == 'Avg Attendance' 
+                      stat['title'] == 'Avg Attendance'
                           ? '${animatedValue}%'
                           : animatedValue.toString(),
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                         color: stat['color'] as Color,
                       ),
@@ -931,12 +1178,42 @@ class _TeacherDashboardState extends State<TeacherDashboard>
 
   Widget _buildQuickActions() {
     final actions = [
-      {'title': 'Take Attendance', 'icon': Icons.how_to_reg_rounded, 'color': AppTheme.successColor},
-      {'title': 'Add Assignment', 'icon': Icons.assignment_turned_in_rounded, 'color': AppTheme.primaryColor},
-      {'title': 'Grade Papers', 'icon': Icons.grade_rounded, 'color': AppTheme.warningColor},
-      {'title': 'Message Parents', 'icon': Icons.message_rounded, 'color': AppTheme.parentColor},
-      {'title': 'Class Notes', 'icon': Icons.note_alt_rounded, 'color': AppTheme.teacherColor},
-      {'title': 'Schedule', 'icon': Icons.schedule_rounded, 'color': Colors.indigo},
+      {
+        'title': 'Take Attendance',
+        'icon': Icons.how_to_reg_rounded,
+        'color': AppTheme.successColor,
+        'onTap': _navigateToTakeAttendance,
+      },
+      {
+        'title': 'Add Assignment',
+        'icon': Icons.assignment_turned_in_rounded,
+        'color': AppTheme.primaryColor,
+        'onTap': _navigateToAddAssignment,
+      },
+      {
+        'title': 'Grade Papers',
+        'icon': Icons.grade_rounded,
+        'color': AppTheme.warningColor,
+        'onTap': _navigateToGradePapers,
+      },
+      {
+        'title': 'Message Parents',
+        'icon': Icons.message_rounded,
+        'color': AppTheme.parentColor,
+        'onTap': _navigateToMessageParents,
+      },
+      {
+        'title': 'Class Notes',
+        'icon': Icons.note_alt_rounded,
+        'color': AppTheme.teacherColor,
+        'onTap': _navigateToClassNotes,
+      },
+      {
+        'title': 'Schedule',
+        'icon': Icons.schedule_rounded,
+        'color': Colors.indigo,
+        'onTap': _navigateToSchedule,
+      },
     ];
 
     return Container(
@@ -1004,16 +1281,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
           child: GestureDetector(
             onTap: () {
               HapticFeedback.lightImpact();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${action['title']} functionality coming soon!'),
-                  backgroundColor: action['color'] as Color,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              );
+              action['onTap']();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -1132,7 +1400,9 @@ class _TeacherDashboardState extends State<TeacherDashboard>
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Show full activity log
+                },
                 child: Text(
                   'View All',
                   style: TextStyle(
@@ -1166,7 +1436,9 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                           color: (activity['color'] as Color).withOpacity(0.05),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: (activity['color'] as Color).withOpacity(0.1),
+                            color: (activity['color'] as Color).withOpacity(
+                              0.1,
+                            ),
                           ),
                         ),
                         child: Row(
@@ -1179,7 +1451,8 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: (activity['color'] as Color).withOpacity(0.3),
+                                    color: (activity['color'] as Color)
+                                        .withOpacity(0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),
@@ -1298,20 +1571,21 @@ class _TeacherDashboardState extends State<TeacherDashboard>
             onPressed: _onFabPressed,
             backgroundColor: AppTheme.teacherColor,
             elevation: 8,
-            child: const Icon(
-              Icons.add_rounded,
-              color: Colors.white,
-              size: 28,
-            ),
+            child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
           ),
         );
       },
     );
   }
 
-  Widget _buildQuickActionSheet() {
+  Widget _buildQuickActionSheet(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: MediaQuery.of(context).padding.bottom + 20,
+      ),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -1330,17 +1604,32 @@ class _TeacherDashboardState extends State<TeacherDashboard>
           const SizedBox(height: 20),
           Text(
             'Quick Add',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildQuickActionItem('Assignment', Icons.assignment_turned_in_rounded, AppTheme.primaryColor),
-              _buildQuickActionItem('Attendance', Icons.how_to_reg_rounded, AppTheme.successColor),
-              _buildQuickActionItem('Grade', Icons.grade_rounded, AppTheme.warningColor),
+              _buildQuickActionItem(
+                'Assignment',
+                Icons.assignment_turned_in_rounded,
+                AppTheme.primaryColor,
+                _navigateToAddAssignment,
+              ),
+              _buildQuickActionItem(
+                'Attendance',
+                Icons.how_to_reg_rounded,
+                AppTheme.successColor,
+                _navigateToTakeAttendance,
+              ),
+              _buildQuickActionItem(
+                'Grade',
+                Icons.grade_rounded,
+                AppTheme.warningColor,
+                _navigateToGradePapers,
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -1349,21 +1638,17 @@ class _TeacherDashboardState extends State<TeacherDashboard>
     );
   }
 
-  Widget _buildQuickActionItem(String title, IconData icon, Color color) {
+  Widget _buildQuickActionItem(
+    String title,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.pop(context);
         HapticFeedback.lightImpact();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Add $title functionality coming soon!'),
-            backgroundColor: color,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
+        onTap();
       },
       child: Column(
         children: [
@@ -1381,11 +1666,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                 ),
               ],
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 28,
-            ),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
           const SizedBox(height: 8),
           Text(
@@ -1400,172 +1681,127 @@ class _TeacherDashboardState extends State<TeacherDashboard>
     );
   }
 
-  // Placeholder methods for other tabs
-  Widget _buildClassesTab() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.teacherColor.withOpacity(0.1),
-            Colors.white,
-          ],
-        ),
+  Widget _buildNotificationsDialog() {
+    final notifications = [
+      {
+        'title': 'Assignment Submitted',
+        'message': '3 new assignments submitted by Class 10A',
+        'time': '5 min ago',
+        'type': 'assignment',
+      },
+      {
+        'title': 'Parent Message',
+        'message': 'Message from John\'s parent about homework',
+        'time': '1 hour ago',
+        'type': 'message',
+      },
+      {
+        'title': 'Class Reminder',
+        'message': 'Physics class starts in 30 minutes',
+        'time': '30 min ago',
+        'type': 'reminder',
+      },
+    ];
+
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: Row(
+        children: [
+          Icon(Icons.notifications_rounded, color: AppTheme.teacherColor),
+          const SizedBox(width: 8),
+          const Text('Notifications'),
+          const Spacer(),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.class_rounded,
-              size: 80,
-              color: AppTheme.teacherColor,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Classes Management',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.teacherColor,
+      content: SizedBox(
+        width: double.maxFinite,
+        child: ListView.separated(
+          shrinkWrap: true,
+          itemCount: notifications.length,
+          separatorBuilder: (context, index) => const Divider(),
+          itemBuilder: (context, index) {
+            final notification = notifications[index];
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundColor: AppTheme.teacherColor.withOpacity(0.1),
+                child: Icon(
+                  _getNotificationIcon(notification['type'] as String),
+                  color: AppTheme.teacherColor,
+                ),
               ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
+              title: Text(
+                notification['title'] as String,
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
-            ),
-          ],
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(notification['message'] as String),
+                  const SizedBox(height: 4),
+                  Text(
+                    notification['time'] as String,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+              isThreeLine: true,
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildAttendanceTab() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.successColor.withOpacity(0.1),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.how_to_reg_rounded,
-              size: 80,
-              color: AppTheme.successColor,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Attendance Tracking',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.successColor,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  IconData _getNotificationIcon(String type) {
+    switch (type) {
+      case 'assignment':
+        return Icons.assignment_rounded;
+      case 'message':
+        return Icons.message_rounded;
+      case 'reminder':
+        return Icons.access_time_rounded;
+      default:
+        return Icons.notifications_rounded;
+    }
   }
 
-  Widget _buildGradesTab() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.warningColor.withOpacity(0.1),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.grade_rounded,
-              size: 80,
-              color: AppTheme.warningColor,
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-            SizedBox(height: 16),
-            Text(
-              'Grades Management',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.warningColor,
+            title: const Text('Logout'),
+            content: const Text('Are you sure you want to logout?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
               ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // Navigate back to login/auth screen
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil('/splash', (route) => false);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.errorColor,
+                ),
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileTab() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.teacherColor.withOpacity(0.1),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.person_rounded,
-              size: 80,
-              color: AppTheme.teacherColor,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Teacher Profile',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.teacherColor,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
     );
   }
 
