@@ -22,7 +22,7 @@ class AppTheme {
         seedColor: primaryColor,
         brightness: Brightness.light,
       ),
-      
+
       // App Bar Theme
       appBarTheme: const AppBarTheme(
         elevation: 0,
@@ -37,11 +37,9 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAliasWithSaveLayer,
       ),
 
@@ -53,10 +51,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
 
@@ -64,9 +59,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
 
@@ -90,7 +83,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: errorColor),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
 
       // Bottom Navigation Bar Theme
@@ -141,18 +137,9 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: Colors.black87,
         ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: Colors.black87,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: Colors.black87,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          color: Colors.black54,
-        ),
+        bodyLarge: TextStyle(fontSize: 16, color: Colors.black87),
+        bodyMedium: TextStyle(fontSize: 14, color: Colors.black87),
+        bodySmall: TextStyle(fontSize: 12, color: Colors.black54),
       ),
     );
   }
@@ -165,7 +152,7 @@ class AppTheme {
         seedColor: primaryColor,
         brightness: Brightness.dark,
       ),
-      
+
       // App Bar Theme
       appBarTheme: const AppBarTheme(
         elevation: 0,
@@ -180,12 +167,9 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
-        color: Colors.grey.shade800,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAliasWithSaveLayer,
       ),
 
@@ -205,7 +189,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: primaryColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
 
       // Typography for Dark Theme
@@ -240,18 +227,9 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: Colors.white,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          color: Colors.white70,
-        ),
+        bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
+        bodyMedium: TextStyle(fontSize: 14, color: Colors.white),
+        bodySmall: TextStyle(fontSize: 12, color: Colors.white70),
       ),
     );
   }

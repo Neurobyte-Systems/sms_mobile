@@ -12,8 +12,7 @@ class AuthScreen extends StatefulWidget {
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen>
-    with TickerProviderStateMixin {
+class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late AnimationController _particleController;
   late AnimationController _pulseController;
@@ -36,29 +35,29 @@ class _AuthScreenState extends State<AuthScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+      ),
+    );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.5),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
+      ),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
+      ),
+    );
 
     // Particle animation
     _particleController = AnimationController(
@@ -77,13 +76,9 @@ class _AuthScreenState extends State<AuthScreen>
       vsync: this,
     );
 
-    _pulseAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.1,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
 
     _animationController.forward();
     _particleController.repeat();
@@ -94,21 +89,17 @@ class _AuthScreenState extends State<AuthScreen>
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const LoginScreen(),
+        pageBuilder:
+            (context, animation, secondaryAnimation) => const LoginScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(1.0, 0.0),
               end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            )),
-            child: FadeTransition(
-              opacity: animation,
-              child: child,
+            ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
             ),
+            child: FadeTransition(opacity: animation, child: child),
           );
         },
         transitionDuration: AppConstants.mediumAnimation,
@@ -120,21 +111,17 @@ class _AuthScreenState extends State<AuthScreen>
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const SignupScreen(),
+        pageBuilder:
+            (context, animation, secondaryAnimation) => const SignupScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(1.0, 0.0),
               end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            )),
-            child: FadeTransition(
-              opacity: animation,
-              child: child,
+            ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
             ),
+            child: FadeTransition(opacity: animation, child: child),
           );
         },
         transitionDuration: AppConstants.mediumAnimation,
@@ -145,7 +132,7 @@ class _AuthScreenState extends State<AuthScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -167,10 +154,10 @@ class _AuthScreenState extends State<AuthScreen>
           children: [
             // Animated background elements
             _buildAnimatedBackground(size),
-            
+
             // Floating particles
             _buildFloatingParticles(size),
-            
+
             // Main content
             SafeArea(
               child: AnimatedBuilder(
@@ -187,30 +174,30 @@ class _AuthScreenState extends State<AuthScreen>
                           child: Column(
                             children: [
                               const SizedBox(height: 60),
-                              
+
                               // App Logo and Title
                               _buildHeader(),
-                              
+
                               const SizedBox(height: 60),
-                              
+
                               // Welcome Message
                               _buildWelcomeMessage(),
-                              
+
                               const SizedBox(height: 50),
-                              
+
                               // Authentication Options
                               _buildAuthOptions(),
-                              
+
                               const SizedBox(height: 40),
-                              
+
                               // Quick Access
                               _buildQuickAccess(),
-                              
+
                               const SizedBox(height: 40),
-                              
+
                               // Footer
                               _buildFooter(),
-                              
+
                               const SizedBox(height: 30),
                             ],
                           ),
@@ -254,7 +241,7 @@ class _AuthScreenState extends State<AuthScreen>
                 ),
               ),
             ),
-            
+
             Positioned(
               bottom: size.height * 0.15,
               left: -size.width * 0.4,
@@ -275,7 +262,7 @@ class _AuthScreenState extends State<AuthScreen>
                 ),
               ),
             ),
-            
+
             // Geometric shapes
             Positioned(
               top: size.height * 0.3,
@@ -307,7 +294,7 @@ class _AuthScreenState extends State<AuthScreen>
             final offset = (_particleAnimation.value + index * 0.1) % 1.0;
             final xPos = (index * 0.12 + offset * 0.2) % 1.0;
             final yPos = offset;
-            
+
             return Positioned(
               left: size.width * xPos,
               top: size.height * yPos - 50,
@@ -350,10 +337,7 @@ class _AuthScreenState extends State<AuthScreen>
                 height: 120,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      Colors.white,
-                      Colors.white.withOpacity(0.95),
-                    ],
+                    colors: [Colors.white, Colors.white.withOpacity(0.95)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -374,12 +358,13 @@ class _AuthScreenState extends State<AuthScreen>
                 ),
                 child: Center(
                   child: ShaderMask(
-                    shaderCallback: (bounds) => LinearGradient(
-                      colors: [
-                        const Color(0xFF667eea),
-                        const Color(0xFF764ba2),
-                      ],
-                    ).createShader(bounds),
+                    shaderCallback:
+                        (bounds) => LinearGradient(
+                          colors: [
+                            const Color(0xFF667eea),
+                            const Color(0xFF764ba2),
+                          ],
+                        ).createShader(bounds),
                     child: const Icon(
                       Icons.school_rounded,
                       size: 60,
@@ -389,17 +374,15 @@ class _AuthScreenState extends State<AuthScreen>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // App Name with gradient
             ShaderMask(
-              shaderCallback: (bounds) => LinearGradient(
-                colors: [
-                  Colors.white,
-                  Colors.white.withOpacity(0.9),
-                ],
-              ).createShader(bounds),
+              shaderCallback:
+                  (bounds) => LinearGradient(
+                    colors: [Colors.white, Colors.white.withOpacity(0.9)],
+                  ).createShader(bounds),
               child: Text(
                 AppConstants.appName,
                 style: Theme.of(context).textTheme.displayMedium?.copyWith(
@@ -416,9 +399,9 @@ class _AuthScreenState extends State<AuthScreen>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             // Tagline
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
@@ -467,9 +450,9 @@ class _AuthScreenState extends State<AuthScreen>
               height: 1.3,
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Text(
             'Join thousands of schools already using MySchoolGH to streamline their operations and enhance learning experiences.',
             textAlign: TextAlign.center,
@@ -493,10 +476,7 @@ class _AuthScreenState extends State<AuthScreen>
           height: 56,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                const Color(0xFF667eea),
-                const Color(0xFF764ba2),
-              ],
+              colors: [const Color(0xFF667eea), const Color(0xFF764ba2)],
             ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
@@ -519,11 +499,7 @@ class _AuthScreenState extends State<AuthScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.login_rounded,
-                  color: Colors.white,
-                  size: 22,
-                ),
+                const Icon(Icons.login_rounded, color: Colors.white, size: 22),
                 const SizedBox(width: 12),
                 Text(
                   'Sign In',
@@ -537,9 +513,9 @@ class _AuthScreenState extends State<AuthScreen>
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Create Account Button
         Container(
           width: double.infinity,
@@ -547,10 +523,7 @@ class _AuthScreenState extends State<AuthScreen>
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.95),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.5),
-              width: 2,
-            ),
+            border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -572,12 +545,13 @@ class _AuthScreenState extends State<AuthScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ShaderMask(
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: [
-                      const Color(0xFF667eea),
-                      const Color(0xFF764ba2),
-                    ],
-                  ).createShader(bounds),
+                  shaderCallback:
+                      (bounds) => LinearGradient(
+                        colors: [
+                          const Color(0xFF667eea),
+                          const Color(0xFF764ba2),
+                        ],
+                      ).createShader(bounds),
                   child: const Icon(
                     Icons.person_add_rounded,
                     color: Colors.white,
@@ -586,12 +560,13 @@ class _AuthScreenState extends State<AuthScreen>
                 ),
                 const SizedBox(width: 12),
                 ShaderMask(
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: [
-                      const Color(0xFF667eea),
-                      const Color(0xFF764ba2),
-                    ],
-                  ).createShader(bounds),
+                  shaderCallback:
+                      (bounds) => LinearGradient(
+                        colors: [
+                          const Color(0xFF667eea),
+                          const Color(0xFF764ba2),
+                        ],
+                      ).createShader(bounds),
                   child: Text(
                     'Create Account',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -626,9 +601,9 @@ class _AuthScreenState extends State<AuthScreen>
               fontWeight: FontWeight.w700,
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -694,11 +669,7 @@ class _AuthScreenState extends State<AuthScreen>
                 ),
               ],
             ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 28,
-            ),
+            child: Icon(icon, color: color, size: 28),
           ),
           const SizedBox(height: 8),
           Text(
@@ -729,9 +700,9 @@ class _AuthScreenState extends State<AuthScreen>
             ),
           ),
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         Text(
           'Version ${AppConstants.appVersion}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -739,9 +710,9 @@ class _AuthScreenState extends State<AuthScreen>
             fontWeight: FontWeight.w500,
           ),
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         GestureDetector(
           onTap: () {
             HapticFeedback.lightImpact();
