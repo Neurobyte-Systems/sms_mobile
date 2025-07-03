@@ -172,14 +172,35 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 16),
-                  _buildViewSelector(),
-                  _buildDateSelector(),
-                  _buildTodayStats(),
-                  Expanded(child: _buildScheduleContent()),
+              child: CustomScrollView(
+                slivers: [
+                  // Header Section
+                  SliverToBoxAdapter(child: _buildHeader()),
+
+                  // Banner Section with Day/Week/Month Tabs
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildViewSelector(),
+                        const SizedBox(height: 16),
+                        _buildDateSelector(),
+                        const SizedBox(height: 16),
+                        _buildTodayStats(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+
+                  // Calendar Section
+                  SliverToBoxAdapter(child: _buildCalendarSection()),
+
+                  const SliverToBoxAdapter(child: SizedBox(height: 22)),
+                  // Schedule Content Section
+                  SliverToBoxAdapter(child: _buildScheduleContent()),
+
+                  // Bottom padding
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
                 ],
               ),
             ),
@@ -220,7 +241,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [AppTheme.primaryColor.withOpacity(0.1), Colors.transparent],
@@ -239,7 +260,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                     color: const Color(0xFF2D3748),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
                   'Manage your teaching timetable',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -250,15 +271,15 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               Icons.schedule_rounded,
               color: AppTheme.primaryColor,
-              size: 32,
+              size: 28,
             ),
           ),
         ],
@@ -307,8 +328,8 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                       option,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey.shade700,
                         fontWeight: FontWeight.w600,
+                        color: isSelected ? Colors.white : Colors.grey.shade600,
                       ),
                     ),
                   ),
@@ -321,81 +342,49 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
   Widget _buildDateSelector() {
     return Container(
-      margin: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Row(
         children: [
           IconButton(
             onPressed: _previousDate,
             icon: const Icon(Icons.chevron_left_rounded),
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppTheme.primaryColor,
-            ),
+            color: AppTheme.primaryColor,
           ),
-          const SizedBox(width: 16),
           Expanded(
-            child: GestureDetector(
-              onTap: _selectDate,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+            child: Column(
+              children: [
+                Text(
+                  _formatDateHeader(_selectedDate),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF2D3748),
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today_rounded,
-                      color: AppTheme.primaryColor,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _formatDateHeader(_selectedDate),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF2D3748),
-                            ),
-                          ),
-                          Text(
-                            _formatDateSubheader(_selectedDate),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      color: Colors.grey.shade600,
-                    ),
-                  ],
+                const SizedBox(height: 4),
+                Text(
+                  _formatDateSubheader(_selectedDate),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
-              ),
+              ],
             ),
           ),
-          const SizedBox(width: 16),
           IconButton(
             onPressed: _nextDate,
             icon: const Icon(Icons.chevron_right_rounded),
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppTheme.primaryColor,
-            ),
+            color: AppTheme.primaryColor,
           ),
         ],
       ),
@@ -405,59 +394,88 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   Widget _buildTodayStats() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Row(
         children: [
-          Expanded(
-            child: _buildStatCard(
-              'Classes Today',
-              _totalClassesToday.toString(),
-              Icons.class_rounded,
-              AppTheme.primaryColor,
-            ),
+          _buildStatItem(
+            Icons.class_rounded,
+            _totalClassesToday.toString(),
+            'Classes',
+            AppTheme.primaryColor,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildStatCard(
-              'Students',
-              _totalStudentsToday.toString(),
-              Icons.people_rounded,
-              AppTheme.studentColor,
-            ),
+          const SizedBox(width: 24),
+          _buildStatItem(
+            Icons.people_rounded,
+            _totalStudentsToday.toString(),
+            'Students',
+            AppTheme.successColor,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildStatCard(
-              'Hours',
-              '${(_todaySchedule.fold(0, (sum, item) => sum + (item['duration'] as int)) / 60).toStringAsFixed(1)}h',
-              Icons.access_time_rounded,
-              AppTheme.successColor,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildStatCard(
-              'Free Time',
-              _calculateFreeTime(),
-              Icons.free_breakfast_rounded,
-              AppTheme.warningColor,
-            ),
+          const SizedBox(width: 24),
+          _buildStatItem(
+            Icons.access_time_rounded,
+            _calculateFreeTime(),
+            'Free Time',
+            AppTheme.warningColor,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(
-    String title,
-    String value,
+  Widget _buildStatItem(
     IconData icon,
+    String value,
+    String label,
     Color color,
   ) {
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF2D3748),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalendarSection() {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -467,48 +485,148 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: color, size: 16),
+          Row(
+            children: [
+              const Text(
+                'Calendar Overview',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: _selectDate,
+                child: Text(
+                  'Select Date',
+                  style: TextStyle(
+                    color: AppTheme.primaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: color,
-            ),
-          ),
-          Text(
-            title,
-            style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
-            textAlign: TextAlign.center,
-          ),
+          const SizedBox(height: 16),
+          _buildWeekView(),
         ],
       ),
     );
   }
 
-  Widget _buildScheduleContent() {
-    if (_selectedView == 'Day') {
-      return _buildDayView();
-    } else if (_selectedView == 'Week') {
-      return _buildWeekView();
-    } else {
-      return _buildMonthView();
-    }
+  Widget _buildWeekView() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(7, (index) {
+            final date = DateTime.now().subtract(
+              Duration(days: DateTime.now().weekday - 1 - index),
+            );
+            final daySchedule =
+                _schedule[DateTime(date.year, date.month, date.day)] ?? [];
+            final isToday = _isSameDay(date, DateTime.now());
+            final isSelected = _isSameDay(date, _selectedDate);
+
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedDate = date;
+                });
+                HapticFeedback.lightImpact();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? AppTheme.primaryColor
+                          : isToday
+                          ? AppTheme.primaryColor.withOpacity(0.1)
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      _getDayName(date),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color:
+                            isSelected
+                                ? Colors.white
+                                : isToday
+                                ? AppTheme.primaryColor
+                                : Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color:
+                            isSelected
+                                ? Colors.white
+                                : isToday
+                                ? AppTheme.primaryColor
+                                : Colors.transparent,
+                        shape: BoxShape.circle,
+                        border:
+                            daySchedule.isNotEmpty
+                                ? Border.all(
+                                  color:
+                                      isSelected
+                                          ? AppTheme.primaryColor
+                                          : AppTheme.successColor,
+                                  width: 2,
+                                )
+                                : null,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${date.day}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color:
+                                isSelected
+                                    ? AppTheme.primaryColor
+                                    : isToday
+                                    ? Colors.white
+                                    : Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    if (daySchedule.isNotEmpty)
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color:
+                              isSelected ? Colors.white : AppTheme.successColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ),
+      ],
+    );
   }
 
-  Widget _buildDayView() {
+  Widget _buildScheduleContent() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -545,469 +663,182 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             ],
           ),
           const SizedBox(height: 16),
-          Expanded(
-            child:
-                _todaySchedule.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                      itemCount: _todaySchedule.length,
-                      itemBuilder: (context, index) {
-                        return TweenAnimationBuilder<double>(
-                          duration: Duration(milliseconds: 300 + (index * 100)),
-                          tween: Tween(begin: 0.0, end: 1.0),
-                          curve: Curves.easeOutCubic,
-                          builder: (context, value, child) {
-                            return Transform.translate(
-                              offset: Offset(0, 20 * (1 - value)),
-                              child: Opacity(
-                                opacity: value,
-                                child: _buildScheduleCard(
-                                  _todaySchedule[index],
-                                  index,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeekView() {
-    final weekStart = _selectedDate.subtract(
-      Duration(days: _selectedDate.weekday - 1),
-    );
-    final weekDays = List.generate(
-      7,
-      (index) => weekStart.add(Duration(days: index)),
-    );
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Week Overview',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF2D3748),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: weekDays.length,
-              itemBuilder: (context, index) {
-                final day = weekDays[index];
-                final daySchedule =
-                    _schedule[DateTime(day.year, day.month, day.day)] ?? [];
-
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 200 + (index * 50)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, child) {
-                    return Transform.translate(
-                      offset: Offset(0, 20 * (1 - value)),
-                      child: Opacity(
-                        opacity: value,
-                        child: _buildWeekDayCard(day, daySchedule),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMonthView() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Month Overview',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF2D3748),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: AnimatedBuilder(
-              animation: _calendarController,
-              builder: (context, child) {
-                return FadeTransition(
-                  opacity: _calendarAnimation,
-                  child: _buildCalendarGrid(),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildScheduleCard(Map<String, dynamic> scheduleItem, int index) {
-    final color = scheduleItem['color'] as Color;
-    final isNow = _isClassNow(scheduleItem);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Material(
-        elevation: isNow ? 8 : 2,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: () => _openClassDetails(scheduleItem),
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: LinearGradient(
-                colors:
-                    isNow
-                        ? [color.withOpacity(0.2), color.withOpacity(0.1)]
-                        : [Colors.white, color.withOpacity(0.05)],
-              ),
-              border: Border.all(
-                color: color.withOpacity(isNow ? 0.5 : 0.2),
-                width: isNow ? 2 : 1,
-              ),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
+          if (_todaySchedule.isEmpty)
+            _buildEmptyState()
+          else
+            Column(
+              children:
+                  _todaySchedule.map((scheduleItem) {
+                    final isNow = _isClassNow(scheduleItem);
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [color, color.withOpacity(0.8)],
-                        ),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
+                        border:
+                            isNow
+                                ? Border.all(color: Colors.green, width: 2)
+                                : null,
                         boxShadow: [
                           BoxShadow(
-                            color: color.withOpacity(0.3),
-                            blurRadius: 8,
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
                             offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-                      child: Icon(
-                        _getTypeIcon(scheduleItem['type']),
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            scheduleItem['subject'],
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF2D3748),
-                            ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: (scheduleItem['color'] as Color)
+                                      .withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  _getTypeIcon(scheduleItem['type']),
+                                  color: scheduleItem['color'] as Color,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      scheduleItem['subject'],
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF2D3748),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      scheduleItem['class'],
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey.shade600,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (isNow)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text(
+                                    'NOW',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            scheduleItem['class'],
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              _buildScheduleInfo(
+                                Icons.access_time_rounded,
+                                '${scheduleItem['time']} (${scheduleItem['duration']}m)',
+                              ),
+                              const SizedBox(width: 16),
+                              _buildScheduleInfo(
+                                Icons.room_rounded,
+                                scheduleItem['room'],
+                              ),
+                              const SizedBox(width: 16),
+                              _buildScheduleInfo(
+                                Icons.people_rounded,
+                                '${scheduleItem['students']} students',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed:
+                                      () => _takeAttendance(scheduleItem),
+                                  icon: const Icon(
+                                    Icons.how_to_reg_rounded,
+                                    size: 16,
+                                  ),
+                                  label: const Text('Take Attendance'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppTheme.primaryColor,
+                                    side: BorderSide(
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed:
+                                      () => _openClassDetails(scheduleItem),
+                                  icon: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 16,
+                                  ),
+                                  label: const Text('View Details'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.primaryColor,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ),
-                    if (isNow)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          'NOW',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    _buildScheduleInfo(
-                      Icons.access_time_rounded,
-                      '${scheduleItem['time']} (${scheduleItem['duration']}min)',
-                    ),
-                    const SizedBox(width: 20),
-                    _buildScheduleInfo(
-                      Icons.room_rounded,
-                      scheduleItem['room'],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    _buildScheduleInfo(
-                      Icons.people_rounded,
-                      '${scheduleItem['students']} students',
-                    ),
-                    const SizedBox(width: 20),
-                    _buildScheduleInfo(
-                      Icons.category_rounded,
-                      scheduleItem['type'].toUpperCase(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _takeAttendance(scheduleItem),
-                        icon: const Icon(Icons.how_to_reg_rounded, size: 16),
-                        label: const Text('Attendance'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: color,
-                          side: BorderSide(color: color),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => _openClassDetails(scheduleItem),
-                        icon: const Icon(Icons.launch_rounded, size: 16),
-                        label: const Text('Open'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: color,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                    );
+                  }).toList(),
             ),
-          ),
-        ),
+        ],
       ),
     );
   }
 
   Widget _buildScheduleInfo(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Colors.grey.shade600),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade700,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWeekDayCard(
-    DateTime day,
-    List<Map<String, dynamic>> daySchedule,
-  ) {
-    final isToday = _isSameDay(day, DateTime.now());
-    final isSelected = _isSameDay(day, _selectedDate);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Material(
-        elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              _selectedDate = day;
-              _selectedView = 'Day';
-            });
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color:
-                  isSelected
-                      ? AppTheme.primaryColor.withOpacity(0.1)
-                      : Colors.white,
-              border:
-                  isSelected
-                      ? Border.all(color: AppTheme.primaryColor, width: 2)
-                      : null,
+    return Expanded(
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: Colors.grey.shade600),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              overflow: TextOverflow.ellipsis,
             ),
-            child: Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color:
-                        isToday
-                            ? AppTheme.successColor
-                            : AppTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _getDayName(day),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: isToday ? Colors.white : AppTheme.primaryColor,
-                        ),
-                      ),
-                      Text(
-                        '${day.day}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: isToday ? Colors.white : AppTheme.primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        daySchedule.isEmpty
-                            ? 'No classes'
-                            : '${daySchedule.length} ${daySchedule.length == 1 ? 'class' : 'classes'}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2D3748),
-                        ),
-                      ),
-                      if (daySchedule.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          daySchedule.map((s) => s['subject']).join(', '),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                if (daySchedule.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.successColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${daySchedule.fold(0, (sum, item) => sum + (item['duration'] as int)) ~/ 60}h',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.successColor,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCalendarGrid() {
-    // This would be a more complex calendar implementation
-    // For now, showing a simplified version
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
           ),
         ],
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.calendar_month_rounded, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              'Month View',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1017,33 +848,24 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(60),
-            ),
-            child: Icon(
-              Icons.event_busy_rounded,
-              size: 60,
-              color: Colors.grey.shade400,
-            ),
+          Icon(
+            Icons.event_available_rounded,
+            size: 64,
+            color: Colors.grey.shade400,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           Text(
-            'No Classes Today',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+            'No classes scheduled',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
               color: Colors.grey.shade600,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Enjoy your free day!',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -1209,8 +1031,16 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryColor),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -1220,82 +1050,35 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   }
 
   void _addNewClass() {
-    showDialog(context: context, builder: (context) => _buildAddClassDialog());
-  }
-
-  Widget _buildAddClassDialog() {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Row(
-        children: [
-          Icon(Icons.add_rounded, color: AppTheme.primaryColor),
-          const SizedBox(width: 8),
-          const Text('Add New Class'),
-        ],
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Subject',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+    HapticFeedback.lightImpact();
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Add New Class'),
+            content: const Text('This feature will be implemented soon.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Class added successfully!'),
+                      backgroundColor: AppTheme.successColor,
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
                 ),
+                child: const Text('Add', style: TextStyle(color: Colors.white)),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Class',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Room',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Time (HH:MM)',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Class added successfully!'),
-                backgroundColor: AppTheme.successColor,
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
+            ],
           ),
-          child: const Text('Add', style: TextStyle(color: Colors.white)),
-        ),
-      ],
     );
   }
 
