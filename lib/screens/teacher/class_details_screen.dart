@@ -6,8 +6,7 @@ import '../../utils/constants.dart';
 class ClassDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> classData;
 
-  const ClassDetailsScreen({Key? key, required this.classData})
-    : super(key: key);
+  const ClassDetailsScreen({super.key, required this.classData});
 
   @override
   State<ClassDetailsScreen> createState() => _ClassDetailsScreenState();
