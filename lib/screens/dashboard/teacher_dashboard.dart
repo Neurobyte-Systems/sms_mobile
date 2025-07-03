@@ -779,7 +779,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
             AnimatedBuilder(
               animation: _scheduleController,
               builder: (context, child) {
@@ -789,7 +789,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                   itemCount:
                       _todaySchedule.length > 2 ? 2 : _todaySchedule.length,
                   separatorBuilder:
-                      (context, index) => const SizedBox(height: 12),
+                      (context, index) => const SizedBox(height: 1),
                   itemBuilder: (context, index) {
                     return TweenAnimationBuilder<double>(
                       duration: Duration(milliseconds: 400 + (index * 100)),
