@@ -789,7 +789,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                   itemCount:
                       _todaySchedule.length > 2 ? 2 : _todaySchedule.length,
                   separatorBuilder:
-                      (context, index) => const SizedBox(height: 1),
+                      (context, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     return TweenAnimationBuilder<double>(
                       duration: Duration(milliseconds: 400 + (index * 100)),
