@@ -128,41 +128,37 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
+    );
 
-    _calendarAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _calendarController,
-      curve: Curves.easeOutCubic,
-    ));
+    _calendarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _calendarController, curve: Curves.easeOutCubic),
+    );
 
     _animationController.forward();
     _calendarController.forward();
   }
 
   List<Map<String, dynamic>> get _todaySchedule {
-    final today = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+    final today = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+    );
     return _schedule[today] ?? [];
   }
 
   int get _totalClassesToday => _todaySchedule.length;
-  int get _totalStudentsToday => _todaySchedule.fold(0, (sum, item) => sum + (item['students'] as int));
+  int get _totalStudentsToday =>
+      _todaySchedule.fold(0, (sum, item) => sum + (item['students'] as int));
 
   @override
   Widget build(BuildContext context) {
@@ -179,12 +175,11 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               child: Column(
                 children: [
                   _buildHeader(),
+                  const SizedBox(height: 16),
                   _buildViewSelector(),
                   _buildDateSelector(),
                   _buildTodayStats(),
-                  Expanded(
-                    child: _buildScheduleContent(),
-                  ),
+                  Expanded(child: _buildScheduleContent()),
                 ],
               ),
             ),
@@ -201,13 +196,13 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       backgroundColor: Colors.transparent,
       title: const Text(
         'My Schedule',
-        style: TextStyle(
-          fontWeight: FontWeight.w800,
-          color: Color(0xFF2D3748),
-        ),
+        style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF2D3748)),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_rounded, color: Color(0xFF2D3748)),
+        icon: const Icon(
+          Icons.arrow_back_ios_rounded,
+          color: Color(0xFF2D3748),
+        ),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
@@ -228,10 +223,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppTheme.primaryColor.withOpacity(0.1),
-            Colors.transparent,
-          ],
+          colors: [AppTheme.primaryColor.withOpacity(0.1), Colors.transparent],
         ),
       ),
       child: Row(
@@ -290,35 +282,39 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         ],
       ),
       child: Row(
-        children: _viewOptions.map((option) {
-          final isSelected = _selectedView == option;
-          return Expanded(
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                setState(() {
-                  _selectedView = option;
-                });
-              },
-              child: AnimatedContainer(
-                duration: AppConstants.shortAnimation,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppTheme.primaryColor : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  option,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.grey.shade700,
-                    fontWeight: FontWeight.w600,
+        children:
+            _viewOptions.map((option) {
+              final isSelected = _selectedView == option;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    setState(() {
+                      _selectedView = option;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: AppConstants.shortAnimation,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected
+                              ? AppTheme.primaryColor
+                              : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      option,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.grey.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
       ),
     );
   }
@@ -451,7 +447,12 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -487,10 +488,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           ),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
             textAlign: TextAlign.center,
           ),
         ],
@@ -527,7 +525,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               const Spacer(),
               if (_todaySchedule.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.successColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -545,27 +546,31 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: _todaySchedule.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    itemCount: _todaySchedule.length,
-                    itemBuilder: (context, index) {
-                      return TweenAnimationBuilder<double>(
-                        duration: Duration(milliseconds: 300 + (index * 100)),
-                        tween: Tween(begin: 0.0, end: 1.0),
-                        curve: Curves.easeOutCubic,
-                        builder: (context, value, child) {
-                          return Transform.translate(
-                            offset: Offset(0, 20 * (1 - value)),
-                            child: Opacity(
-                              opacity: value,
-                              child: _buildScheduleCard(_todaySchedule[index], index),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
+            child:
+                _todaySchedule.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                      itemCount: _todaySchedule.length,
+                      itemBuilder: (context, index) {
+                        return TweenAnimationBuilder<double>(
+                          duration: Duration(milliseconds: 300 + (index * 100)),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0, 20 * (1 - value)),
+                              child: Opacity(
+                                opacity: value,
+                                child: _buildScheduleCard(
+                                  _todaySchedule[index],
+                                  index,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
           ),
         ],
       ),
@@ -573,8 +578,13 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   }
 
   Widget _buildWeekView() {
-    final weekStart = _selectedDate.subtract(Duration(days: _selectedDate.weekday - 1));
-    final weekDays = List.generate(7, (index) => weekStart.add(Duration(days: index)));
+    final weekStart = _selectedDate.subtract(
+      Duration(days: _selectedDate.weekday - 1),
+    );
+    final weekDays = List.generate(
+      7,
+      (index) => weekStart.add(Duration(days: index)),
+    );
 
     return Container(
       margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
@@ -595,8 +605,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               itemCount: weekDays.length,
               itemBuilder: (context, index) {
                 final day = weekDays[index];
-                final daySchedule = _schedule[DateTime(day.year, day.month, day.day)] ?? [];
-                
+                final daySchedule =
+                    _schedule[DateTime(day.year, day.month, day.day)] ?? [];
+
                 return TweenAnimationBuilder<double>(
                   duration: Duration(milliseconds: 200 + (index * 50)),
                   tween: Tween(begin: 0.0, end: 1.0),
@@ -667,15 +678,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(
-                colors: isNow
-                    ? [
-                        color.withOpacity(0.2),
-                        color.withOpacity(0.1),
-                      ]
-                    : [
-                        Colors.white,
-                        color.withOpacity(0.05),
-                      ],
+                colors:
+                    isNow
+                        ? [color.withOpacity(0.2), color.withOpacity(0.1)]
+                        : [Colors.white, color.withOpacity(0.05)],
               ),
               border: Border.all(
                 color: color.withOpacity(isNow ? 0.5 : 0.2),
@@ -735,7 +741,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                     ),
                     if (isNow)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green,
                           borderRadius: BorderRadius.circular(20),
@@ -754,17 +763,29 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    _buildScheduleInfo(Icons.access_time_rounded, '${scheduleItem['time']} (${scheduleItem['duration']}min)'),
+                    _buildScheduleInfo(
+                      Icons.access_time_rounded,
+                      '${scheduleItem['time']} (${scheduleItem['duration']}min)',
+                    ),
                     const SizedBox(width: 20),
-                    _buildScheduleInfo(Icons.room_rounded, scheduleItem['room']),
+                    _buildScheduleInfo(
+                      Icons.room_rounded,
+                      scheduleItem['room'],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    _buildScheduleInfo(Icons.people_rounded, '${scheduleItem['students']} students'),
+                    _buildScheduleInfo(
+                      Icons.people_rounded,
+                      '${scheduleItem['students']} students',
+                    ),
                     const SizedBox(width: 20),
-                    _buildScheduleInfo(Icons.category_rounded, scheduleItem['type'].toUpperCase()),
+                    _buildScheduleInfo(
+                      Icons.category_rounded,
+                      scheduleItem['type'].toUpperCase(),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -826,7 +847,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     );
   }
 
-  Widget _buildWeekDayCard(DateTime day, List<Map<String, dynamic>> daySchedule) {
+  Widget _buildWeekDayCard(
+    DateTime day,
+    List<Map<String, dynamic>> daySchedule,
+  ) {
     final isToday = _isSameDay(day, DateTime.now());
     final isSelected = _isSameDay(day, _selectedDate);
 
@@ -847,8 +871,14 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: isSelected ? AppTheme.primaryColor.withOpacity(0.1) : Colors.white,
-              border: isSelected ? Border.all(color: AppTheme.primaryColor, width: 2) : null,
+              color:
+                  isSelected
+                      ? AppTheme.primaryColor.withOpacity(0.1)
+                      : Colors.white,
+              border:
+                  isSelected
+                      ? Border.all(color: AppTheme.primaryColor, width: 2)
+                      : null,
             ),
             child: Row(
               children: [
@@ -856,7 +886,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: isToday ? AppTheme.successColor : AppTheme.primaryColor.withOpacity(0.1),
+                    color:
+                        isToday
+                            ? AppTheme.successColor
+                            : AppTheme.primaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -887,7 +920,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        daySchedule.isEmpty ? 'No classes' : '${daySchedule.length} ${daySchedule.length == 1 ? 'class' : 'classes'}',
+                        daySchedule.isEmpty
+                            ? 'No classes'
+                            : '${daySchedule.length} ${daySchedule.length == 1 ? 'class' : 'classes'}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -911,7 +946,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 ),
                 if (daySchedule.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.successColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -953,11 +991,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.calendar_month_rounded,
-              size: 64,
-              color: Colors.grey,
-            ),
+            Icon(Icons.calendar_month_rounded, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text(
               'Month View',
@@ -970,10 +1004,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             SizedBox(height: 8),
             Text(
               'Coming Soon!',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
         ),
@@ -1010,9 +1041,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           const SizedBox(height: 8),
           Text(
             'Enjoy your free day!',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -1040,10 +1071,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       icon: const Icon(Icons.add_rounded, color: Colors.white),
       label: const Text(
         'Add Class',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-        ),
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -1051,7 +1079,20 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   // Helper Methods
   String _formatDateHeader(DateTime date) {
     final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${weekdays[date.weekday - 1]}, ${date.day} ${months[date.month - 1]}';
   }
 
@@ -1060,7 +1101,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       return 'Today';
     } else if (_isSameDay(date, DateTime.now().add(const Duration(days: 1)))) {
       return 'Tomorrow';
-    } else if (_isSameDay(date, DateTime.now().subtract(const Duration(days: 1)))) {
+    } else if (_isSameDay(
+      date,
+      DateTime.now().subtract(const Duration(days: 1)),
+    )) {
       return 'Yesterday';
     }
     return '${date.year}';
@@ -1072,7 +1116,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   }
 
   String _calculateFreeTime() {
-    final totalMinutes = _todaySchedule.fold(0, (sum, item) => sum + (item['duration'] as int));
+    final totalMinutes = _todaySchedule.fold(
+      0,
+      (sum, item) => sum + (item['duration'] as int),
+    );
     final freeMinutes = (8 * 60) - totalMinutes; // Assuming 8-hour workday
     return freeMinutes > 0 ? '${(freeMinutes / 60).toStringAsFixed(1)}h' : '0h';
   }
@@ -1085,11 +1132,19 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     final now = DateTime.now();
     final timeStr = scheduleItem['time'] as String;
     final timeParts = timeStr.split(':');
-    final classTime = DateTime(now.year, now.month, now.day, int.parse(timeParts[0]), int.parse(timeParts[1]));
+    final classTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      int.parse(timeParts[0]),
+      int.parse(timeParts[1]),
+    );
     final duration = scheduleItem['duration'] as int;
     final endTime = classTime.add(Duration(minutes: duration));
-    
-    return now.isAfter(classTime) && now.isBefore(endTime) && _isSameDay(now, _selectedDate);
+
+    return now.isAfter(classTime) &&
+        now.isBefore(endTime) &&
+        _isSameDay(now, _selectedDate);
   }
 
   IconData _getTypeIcon(String type) {
@@ -1123,7 +1178,11 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       } else if (_selectedView == 'Week') {
         _selectedDate = _selectedDate.subtract(const Duration(days: 7));
       } else {
-        _selectedDate = DateTime(_selectedDate.year, _selectedDate.month - 1, _selectedDate.day);
+        _selectedDate = DateTime(
+          _selectedDate.year,
+          _selectedDate.month - 1,
+          _selectedDate.day,
+        );
       }
     });
     HapticFeedback.lightImpact();
@@ -1136,7 +1195,11 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       } else if (_selectedView == 'Week') {
         _selectedDate = _selectedDate.add(const Duration(days: 7));
       } else {
-        _selectedDate = DateTime(_selectedDate.year, _selectedDate.month + 1, _selectedDate.day);
+        _selectedDate = DateTime(
+          _selectedDate.year,
+          _selectedDate.month + 1,
+          _selectedDate.day,
+        );
       }
     });
     HapticFeedback.lightImpact();
@@ -1157,10 +1220,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   }
 
   void _addNewClass() {
-    showDialog(
-      context: context,
-      builder: (context) => _buildAddClassDialog(),
-    );
+    showDialog(context: context, builder: (context) => _buildAddClassDialog());
   }
 
   Widget _buildAddClassDialog() {
@@ -1180,28 +1240,36 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             TextField(
               decoration: InputDecoration(
                 labelText: 'Subject',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Class',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Room',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Time (HH:MM)',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -1222,7 +1290,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               ),
             );
           },
-          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.primaryColor,
+          ),
           child: const Text('Add', style: TextStyle(color: Colors.white)),
         ),
       ],
@@ -1254,31 +1324,40 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            const SizedBox(height: 20),
-            _buildOptionItem(Icons.sync_rounded, 'Sync Calendar', () {}),
-            _buildOptionItem(Icons.download_rounded, 'Export Schedule', () {}),
-            _buildOptionItem(Icons.settings_rounded, 'Schedule Settings', () {}),
-            const SizedBox(height: 10),
-          ],
-        ),
-      ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildOptionItem(Icons.sync_rounded, 'Sync Calendar', () {}),
+                _buildOptionItem(
+                  Icons.download_rounded,
+                  'Export Schedule',
+                  () {},
+                ),
+                _buildOptionItem(
+                  Icons.settings_rounded,
+                  'Schedule Settings',
+                  () {},
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
     );
   }
 
@@ -1305,14 +1384,13 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 class ClassDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> classData;
 
-  const ClassDetailsScreen({Key? key, required this.classData}) : super(key: key);
+  const ClassDetailsScreen({Key? key, required this.classData})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(classData['subject']),
-      ),
+      appBar: AppBar(title: Text(classData['subject'])),
       body: const Center(
         child: Text('Class Details Screen - Implementation pending'),
       ),
