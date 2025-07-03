@@ -1533,6 +1533,7 @@ class _ParentDashboardState extends State<ParentDashboard>
         return Transform.scale(
           scale: 1.0 + (_fabController.value * 0.1),
           child: FloatingActionButton(
+            heroTag: 'quick_add_fab_parent',
             onPressed: _onFabPressed,
             backgroundColor: AppTheme.parentColor,
             elevation: 8,

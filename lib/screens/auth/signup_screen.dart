@@ -15,7 +15,7 @@ class _SignupScreenState extends State<SignupScreen>
     with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _pageController = PageController();
-  
+
   // Form controllers
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -63,29 +63,20 @@ class _SignupScreenState extends State<SignupScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.9,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutBack,
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
+    );
 
     // Particle animation
     _particleController = AnimationController(
@@ -167,11 +158,11 @@ class _SignupScreenState extends State<SignupScreen>
 
   void _nextStep() {
     HapticFeedback.lightImpact();
-    
+
     // Debug: Print current step and validation status
     print('Current step: $_currentStep');
     print('Validation result: ${_validateCurrentStep()}');
-    
+
     if (_currentStep < _steps.length - 1) {
       // Validate current step before proceeding
       if (!_validateCurrentStep()) {
@@ -188,7 +179,7 @@ class _SignupScreenState extends State<SignupScreen>
         );
         return;
       }
-      
+
       setState(() {
         _currentStep++;
       });
@@ -205,7 +196,7 @@ class _SignupScreenState extends State<SignupScreen>
 
   void _previousStep() {
     HapticFeedback.lightImpact();
-    
+
     if (_currentStep > 0) {
       setState(() {
         _currentStep--;
@@ -224,15 +215,15 @@ class _SignupScreenState extends State<SignupScreen>
       case 0:
         // Personal Info step - check if basic fields are filled
         return _firstNameController.text.trim().isNotEmpty &&
-               _lastNameController.text.trim().isNotEmpty &&
-               _phoneController.text.trim().isNotEmpty;
+            _lastNameController.text.trim().isNotEmpty &&
+            _phoneController.text.trim().isNotEmpty;
       case 1:
         // Account Details step - check email and password fields
         return _emailController.text.trim().isNotEmpty &&
-               _passwordController.text.isNotEmpty &&
-               _confirmPasswordController.text.isNotEmpty &&
-               _passwordController.text.length >= AppConstants.minPasswordLength &&
-               _passwordController.text == _confirmPasswordController.text;
+            _passwordController.text.isNotEmpty &&
+            _confirmPasswordController.text.isNotEmpty &&
+            _passwordController.text.length >= AppConstants.minPasswordLength &&
+            _passwordController.text == _confirmPasswordController.text;
       case 2:
         // Role & School step - check terms agreement and school code
         return _agreeToTerms && _schoolCodeController.text.trim().isNotEmpty;
@@ -274,24 +265,21 @@ class _SignupScreenState extends State<SignupScreen>
 
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const LoginScreen(),
+          pageBuilder:
+              (context, animation, secondaryAnimation) => const LoginScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Simple slide transition only
             return SlideTransition(
               position: Tween<Offset>(
-                begin: const Offset(1.0, 0.0),
+                begin: const Offset(1.0, 0.0), // Slide from right
                 end: Offset.zero,
-              ).animate(CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              )),
-              child: FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
+              ).animate(animation),
+              child: child,
             );
           },
-          transitionDuration: AppConstants.mediumAnimation,
+          transitionDuration: const Duration(
+            milliseconds: 300,
+          ), // Reduced duration
         ),
       );
     }
@@ -300,7 +288,7 @@ class _SignupScreenState extends State<SignupScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -322,17 +310,17 @@ class _SignupScreenState extends State<SignupScreen>
           children: [
             // Animated background
             _buildAnimatedBackground(size),
-            
+
             // Floating particles
             _buildFloatingParticles(size),
-            
+
             // Main content
             SafeArea(
               child: Column(
                 children: [
                   // Header with back button and progress
                   _buildHeader(),
-                  
+
                   // Form content
                   Expanded(
                     child: AnimatedBuilder(
@@ -362,7 +350,7 @@ class _SignupScreenState extends State<SignupScreen>
                       },
                     ),
                   ),
-                  
+
                   // Navigation buttons
                   _buildNavigationButtons(),
                 ],
@@ -401,7 +389,7 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-            
+
             Positioned(
               bottom: size.height * 0.2,
               left: -size.width * 0.4,
@@ -437,7 +425,7 @@ class _SignupScreenState extends State<SignupScreen>
             final offset = (_particleAnimation.value + index * 0.1) % 1.0;
             final xPos = (index * 0.15 + offset * 0.2) % 1.0;
             final yPos = offset;
-            
+
             return Positioned(
               left: size.width * xPos,
               top: size.height * yPos - 50,
@@ -508,9 +496,9 @@ class _SignupScreenState extends State<SignupScreen>
               const SizedBox(width: 48), // Balance the back button
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Progress indicator
           Container(
             padding: const EdgeInsets.all(16),
@@ -525,7 +513,7 @@ class _SignupScreenState extends State<SignupScreen>
                   children: List.generate(_steps.length, (index) {
                     final isActive = index <= _currentStep;
                     final isCompleted = index < _currentStep;
-                    
+
                     return Expanded(
                       child: Row(
                         children: [
@@ -533,28 +521,33 @@ class _SignupScreenState extends State<SignupScreen>
                             child: Container(
                               height: 6,
                               decoration: BoxDecoration(
-                                gradient: isActive
-                                    ? LinearGradient(
-                                        colors: [
-                                          Colors.white,
-                                          Colors.white.withOpacity(0.8),
-                                        ],
-                                      )
-                                    : null,
-                                color: isActive ? null : Colors.white.withOpacity(0.3),
+                                gradient:
+                                    isActive
+                                        ? LinearGradient(
+                                          colors: [
+                                            Colors.white,
+                                            Colors.white.withOpacity(0.8),
+                                          ],
+                                        )
+                                        : null,
+                                color:
+                                    isActive
+                                        ? null
+                                        : Colors.white.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(3),
                               ),
                             ),
                           ),
-                          if (index < _steps.length - 1) const SizedBox(width: 8),
+                          if (index < _steps.length - 1)
+                            const SizedBox(width: 8),
                         ],
                       ),
                     );
                   }),
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 Text(
                   '${_currentStep + 1} of ${_steps.length}: ${_steps[_currentStep]}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -597,18 +590,18 @@ class _SignupScreenState extends State<SignupScreen>
                 color: const Color(0xFF2D3748),
               ),
             ),
-            
+
             const SizedBox(height: 6),
-            
+
             Text(
               'Tell us about yourself',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF4A5568),
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF4A5568)),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             TextFormField(
               controller: _firstNameController,
               validator: _validateName,
@@ -629,9 +622,9 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             TextFormField(
               controller: _lastNameController,
               validator: _validateName,
@@ -652,9 +645,9 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
@@ -709,18 +702,18 @@ class _SignupScreenState extends State<SignupScreen>
                 color: const Color(0xFF2D3748),
               ),
             ),
-            
+
             const SizedBox(height: 6),
-            
+
             Text(
               'Create your login credentials',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF4A5568),
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF4A5568)),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
@@ -742,9 +735,9 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             TextFormField(
               controller: _passwordController,
               obscureText: _obscurePassword,
@@ -779,9 +772,9 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             TextFormField(
               controller: _confirmPasswordController,
               obscureText: _obscureConfirmPassword,
@@ -849,18 +842,18 @@ class _SignupScreenState extends State<SignupScreen>
                 color: const Color(0xFF2D3748),
               ),
             ),
-            
+
             const SizedBox(height: 6),
-            
+
             Text(
               'Select your role and school',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF4A5568),
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF4A5568)),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Role selection
             Text(
               'I am a...',
@@ -869,13 +862,13 @@ class _SignupScreenState extends State<SignupScreen>
                 color: const Color(0xFF2D3748),
               ),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             _buildRoleSelector(),
-            
+
             const SizedBox(height: 20),
-            
+
             TextFormField(
               controller: _schoolCodeController,
               onChanged: (value) => setState(() {}),
@@ -896,9 +889,9 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Terms and conditions
             Container(
               padding: const EdgeInsets.all(12),
@@ -934,9 +927,8 @@ class _SignupScreenState extends State<SignupScreen>
                         padding: const EdgeInsets.only(top: 12),
                         child: RichText(
                           text: TextSpan(
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFF4A5568),
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: const Color(0xFF4A5568)),
                             children: [
                               const TextSpan(text: 'I agree to the '),
                               TextSpan(
@@ -971,10 +963,30 @@ class _SignupScreenState extends State<SignupScreen>
 
   Widget _buildRoleSelector() {
     final roles = [
-      {'id': AppConstants.studentRole, 'name': 'Student', 'icon': Icons.person, 'desc': 'Learning materials'},
-      {'id': AppConstants.teacherRole, 'name': 'Teacher', 'icon': Icons.school, 'desc': 'Manage classes'},
-      {'id': AppConstants.parentRole, 'name': 'Parent', 'icon': Icons.family_restroom, 'desc': 'Monitor progress'},
-      {'id': AppConstants.adminRole, 'name': 'Admin', 'icon': Icons.admin_panel_settings, 'desc': 'Full management'},
+      {
+        'id': AppConstants.studentRole,
+        'name': 'Student',
+        'icon': Icons.person,
+        'desc': 'Learning materials',
+      },
+      {
+        'id': AppConstants.teacherRole,
+        'name': 'Teacher',
+        'icon': Icons.school,
+        'desc': 'Manage classes',
+      },
+      {
+        'id': AppConstants.parentRole,
+        'name': 'Parent',
+        'icon': Icons.family_restroom,
+        'desc': 'Monitor progress',
+      },
+      {
+        'id': AppConstants.adminRole,
+        'name': 'Admin',
+        'icon': Icons.admin_panel_settings,
+        'desc': 'Full management',
+      },
     ];
 
     return GridView.builder(
@@ -991,7 +1003,7 @@ class _SignupScreenState extends State<SignupScreen>
         final role = roles[index];
         final isSelected = _selectedRole == role['id'];
         final color = AppTheme.getRoleColor(role['id'] as String);
-        
+
         return GestureDetector(
           onTap: () {
             setState(() {
@@ -1003,29 +1015,31 @@ class _SignupScreenState extends State<SignupScreen>
             duration: AppConstants.shortAnimation,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              gradient: isSelected
-                  ? LinearGradient(
-                      colors: [
-                        color.withOpacity(0.2),
-                        color.withOpacity(0.1),
-                      ],
-                    )
-                  : null,
+              gradient:
+                  isSelected
+                      ? LinearGradient(
+                        colors: [
+                          color.withOpacity(0.2),
+                          color.withOpacity(0.1),
+                        ],
+                      )
+                      : null,
               color: isSelected ? null : Colors.grey.shade50,
               border: Border.all(
                 color: isSelected ? color : Colors.grey.shade300,
                 width: isSelected ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: color.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : null,
+              boxShadow:
+                  isSelected
+                      ? [
+                        BoxShadow(
+                          color: color.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                      : null,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1056,10 +1070,7 @@ class _SignupScreenState extends State<SignupScreen>
                 Text(
                   role['desc'] as String,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 9,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 9),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1076,11 +1087,7 @@ class _SignupScreenState extends State<SignupScreen>
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
-        border: Border(
-          top: BorderSide(
-            color: Colors.white.withOpacity(0.2),
-          ),
-        ),
+        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.2))),
       ),
       child: Row(
         children: [
@@ -1124,20 +1131,17 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-          
+
           if (_currentStep > 0) const SizedBox(width: 16),
-          
-                      // Next/Create Account button
+
+          // Next/Create Account button
           Expanded(
             flex: _currentStep == 0 ? 1 : 1,
             child: Container(
               height: 56,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.white,
-                    Colors.white.withOpacity(0.9),
-                  ],
+                  colors: [Colors.white, Colors.white.withOpacity(0.9)],
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
@@ -1157,37 +1161,42 @@ class _SignupScreenState extends State<SignupScreen>
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: _isLoading
-                    ? SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppTheme.getRoleColor(_selectedRole),
-                          ),
-                        ),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _currentStep == _steps.length - 1 ? 'Create' : 'Next',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: AppTheme.getRoleColor(_selectedRole),
-                              fontWeight: FontWeight.w700,
+                child:
+                    _isLoading
+                        ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppTheme.getRoleColor(_selectedRole),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            _currentStep == _steps.length - 1
-                                ? Icons.rocket_launch_rounded
-                                : Icons.arrow_forward_ios_rounded,
-                            size: 18,
-                            color: AppTheme.getRoleColor(_selectedRole),
-                          ),
-                        ],
-                      ),
+                        )
+                        : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _currentStep == _steps.length - 1
+                                  ? 'Create'
+                                  : 'Next',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge?.copyWith(
+                                color: AppTheme.getRoleColor(_selectedRole),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              _currentStep == _steps.length - 1
+                                  ? Icons.rocket_launch_rounded
+                                  : Icons.arrow_forward_ios_rounded,
+                              size: 18,
+                              color: AppTheme.getRoleColor(_selectedRole),
+                            ),
+                          ],
+                        ),
               ),
             ),
           ),

@@ -1412,6 +1412,7 @@ class _StudentDashboardState extends State<StudentDashboard>
         return Transform.scale(
           scale: 1.0 + (_fabController.value * 0.1),
           child: FloatingActionButton(
+            heroTag: 'quick_add_fab_student',
             onPressed: _onFabPressed,
             backgroundColor: AppTheme.studentColor,
             elevation: 8,

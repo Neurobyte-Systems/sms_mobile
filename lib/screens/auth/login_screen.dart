@@ -20,19 +20,19 @@ class _LoginScreenState extends State<LoginScreen>
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  
+
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _isBiometricLoading = false;
   bool _rememberMe = false;
   String? _selectedRole;
 
-  // Animation controllers
+  // Animation controllers for existing UI animations (keeping these for UI elements)
   late AnimationController _animationController;
   late AnimationController _particleController;
   late AnimationController _backgroundController;
 
-  // Animations
+  // Animations for UI elements
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
@@ -46,34 +46,35 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   void _initializeAnimations() {
+    // Keep existing animations for UI elements (not for page transitions)
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+      ),
+    );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
+      ),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.9,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
+      ),
+    );
 
     // Particle animation
     _particleController = AnimationController(
@@ -102,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen>
     _backgroundController.repeat();
   }
 
+  // Validation methods
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
@@ -137,8 +139,9 @@ class _LoginScreenState extends State<LoginScreen>
     await Future.delayed(const Duration(seconds: 2));
 
     // Demo login - determine role based on email or use selected role
-    String role = _selectedRole ?? _determineRoleFromEmail(_emailController.text);
-    
+    String role =
+        _selectedRole ?? _determineRoleFromEmail(_emailController.text);
+
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -156,9 +159,10 @@ class _LoginScreenState extends State<LoginScreen>
     return AppConstants.studentRole; // Default
   }
 
+  // UPDATED: Simple SlideTransition only for navigation
   void _navigateToDashboard(String role) {
     Widget dashboard;
-    
+
     switch (role) {
       case AppConstants.adminRole:
         dashboard = const AdminDashboard();
@@ -180,21 +184,18 @@ class _LoginScreenState extends State<LoginScreen>
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => dashboard,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 1),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeInOut,
-              )),
-              child: child,
-            ),
+          // Simple slide transition only - from right to left
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1.0, 0.0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
           );
         },
-        transitionDuration: AppConstants.mediumAnimation,
+        transitionDuration: const Duration(
+          milliseconds: 300,
+        ), // Reduced duration
       ),
       (route) => false,
     );
@@ -202,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   void _loginWithBiometrics() async {
     HapticFeedback.lightImpact();
-    
+
     try {
       // Show loading state
       setState(() {
@@ -211,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen>
 
       // Check if biometric authentication is available
       final isAvailable = await _checkBiometricAvailability();
-      
+
       if (!isAvailable) {
         _showBiometricUnavailableDialog();
         return;
@@ -219,12 +220,14 @@ class _LoginScreenState extends State<LoginScreen>
 
       // Attempt biometric authentication
       final isAuthenticated = await _authenticateWithBiometrics();
-      
+
       if (isAuthenticated) {
         // Success - navigate to default dashboard or last used role
         HapticFeedback.mediumImpact();
-        _navigateToDashboard(AppConstants.studentRole); // Default to student for demo
-        
+        _navigateToDashboard(
+          AppConstants.studentRole,
+        ); // Default to student for demo
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -262,20 +265,20 @@ class _LoginScreenState extends State<LoginScreen>
   Future<bool> _checkBiometricAvailability() async {
     // Simulate checking biometric availability
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     // For demo purposes, we'll simulate that biometrics are available
     // In a real app, you would use local_auth plugin:
     // final LocalAuthentication localAuth = LocalAuthentication();
     // final bool isAvailable = await localAuth.canCheckBiometrics;
     // final List<BiometricType> availableBiometrics = await localAuth.getAvailableBiometrics();
-    
+
     return true; // Simulate biometrics are available
   }
 
   Future<bool> _authenticateWithBiometrics() async {
     // Simulate biometric authentication process
     await Future.delayed(const Duration(milliseconds: 1500));
-    
+
     // For demo purposes, we'll simulate successful authentication
     // In a real app, you would use:
     // final bool didAuthenticate = await localAuth.authenticate(
@@ -285,7 +288,7 @@ class _LoginScreenState extends State<LoginScreen>
     //     stickyAuth: true,
     //   ),
     // );
-    
+
     // Simulate 80% success rate for demo
     return DateTime.now().millisecondsSinceEpoch % 5 != 0;
   }
@@ -293,115 +296,147 @@ class _LoginScreenState extends State<LoginScreen>
   void _showBiometricUnavailableDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: AppTheme.warningColor),
-            const SizedBox(width: 8),
-            const Text('Biometric Unavailable'),
-          ],
-        ),
-        content: const Text(
-          'Biometric authentication is not available on this device. Please ensure your device supports biometric authentication and it\'s properly set up.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK', style: TextStyle(color: AppTheme.primaryColor)),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: AppTheme.warningColor),
+                const SizedBox(width: 8),
+                const Text('Biometric Unavailable'),
+              ],
+            ),
+            content: const Text(
+              'Biometric authentication is not available on this device. Please ensure your device supports biometric authentication and it\'s properly set up.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  'OK',
+                  style: TextStyle(color: AppTheme.primaryColor),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showBiometricFailedDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Icon(Icons.error_outline, color: AppTheme.errorColor),
-            const SizedBox(width: 8),
-            const Text('Authentication Failed'),
-          ],
-        ),
-        content: const Text(
-          'Biometric authentication failed. Please try again or use your email and password to login.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Try Again', style: TextStyle(color: AppTheme.primaryColor)),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.error_outline, color: AppTheme.errorColor),
+                const SizedBox(width: 8),
+                const Text('Authentication Failed'),
+              ],
+            ),
+            content: const Text(
+              'Biometric authentication failed. Please try again or use your email and password to login.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  'Try Again',
+                  style: TextStyle(color: AppTheme.primaryColor),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Focus on email field for manual login
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+                child: Text(
+                  'Use Password',
+                  style: TextStyle(color: AppTheme.secondaryColor),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Focus on email field for manual login
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: Text('Use Password', style: TextStyle(color: AppTheme.secondaryColor)),
-          ),
-        ],
-      ),
     );
   }
 
   void _showBiometricErrorDialog(String error) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Icon(Icons.error, color: AppTheme.errorColor),
-            const SizedBox(width: 8),
-            const Text('Biometric Error'),
-          ],
-        ),
-        content: Text(
-          'An error occurred during biometric authentication: $error\n\nPlease try again or use your email and password.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK', style: TextStyle(color: AppTheme.primaryColor)),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.error, color: AppTheme.errorColor),
+                const SizedBox(width: 8),
+                const Text('Biometric Error'),
+              ],
+            ),
+            content: Text(
+              'An error occurred during biometric authentication: $error\n\nPlease try again or use your email and password.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  'Try Again',
+                  style: TextStyle(color: AppTheme.primaryColor),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Focus on email field for manual login
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+                child: Text(
+                  'Use Password',
+                  style: TextStyle(color: AppTheme.secondaryColor),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF4c6ef5),
-              const Color(0xFF7c3aed),
-              const Color(0xFFf093fb),
-              const Color(0xFFf5576c),
+              Color(0xFF667eea),
+              Color(0xFF764ba2),
+              Color(0xFFf093fb),
+              Color(0xFFf5576c),
             ],
-            stops: const [0.0, 0.3, 0.7, 1.0],
+            stops: [0.0, 0.3, 0.7, 1.0],
           ),
         ),
         child: Stack(
           children: [
-            // Animated background
+            // Animated background elements
             _buildAnimatedBackground(size),
-            
+
             // Floating particles
             _buildFloatingParticles(size),
-            
+
             // Main content
             SafeArea(
               child: AnimatedBuilder(
@@ -413,47 +448,7 @@ class _LoginScreenState extends State<LoginScreen>
                       position: _slideAnimation,
                       child: ScaleTransition(
                         scale: _scaleAnimation,
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Column(
-                            children: [
-                              // Back button
-                              _buildBackButton(),
-
-                              const SizedBox(height: 40),
-
-                              // Header
-                              _buildHeader(),
-
-                              const SizedBox(height: 40),
-
-                              // Login Form
-                              _buildLoginForm(),
-
-                              const SizedBox(height: 30),
-
-                              // Login Button
-                              _buildLoginButton(),
-
-                              const SizedBox(height: 24),
-
-                              // Divider
-                              _buildDivider(),
-
-                              const SizedBox(height: 24),
-
-                              // Alternative Login Options
-                              _buildAlternativeLogins(),
-
-                              const SizedBox(height: 30),
-
-                              // Footer
-                              _buildFooter(),
-                              
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                        ),
+                        child: _buildLoginContent(),
                       ),
                     ),
                   );
@@ -470,51 +465,19 @@ class _LoginScreenState extends State<LoginScreen>
     return AnimatedBuilder(
       animation: _backgroundController,
       builder: (context, child) {
-        return Stack(
-          children: [
-            // Large floating circles
-            Positioned(
-              top: size.height * 0.15,
-              right: -size.width * 0.3,
-              child: Transform.rotate(
-                angle: _backgroundAnimation.value * 2,
-                child: Container(
-                  width: size.width * 0.8,
-                  height: size.width * 0.8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        Colors.white.withOpacity(0.1),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+        return Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment(-0.3, -0.5),
+              radius: 1.5,
+              colors: [
+                Colors.white.withOpacity(0.1 * _backgroundAnimation.value),
+                Colors.transparent,
+              ],
             ),
-            
-            Positioned(
-              bottom: size.height * 0.2,
-              left: -size.width * 0.4,
-              child: Transform.rotate(
-                angle: -_backgroundAnimation.value * 1.5,
-                child: Container(
-                  width: size.width * 0.9,
-                  height: size.width * 0.9,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        Colors.white.withOpacity(0.08),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         );
       },
     );
@@ -522,33 +485,29 @@ class _LoginScreenState extends State<LoginScreen>
 
   Widget _buildFloatingParticles(Size size) {
     return AnimatedBuilder(
-      animation: _particleController,
+      animation: _particleAnimation,
       builder: (context, child) {
         return Stack(
-          children: List.generate(18, (index) {
-            final offset = (_particleAnimation.value + index * 0.12) % 1.0;
-            final xPos = (index * 0.15 + offset * 0.2) % 1.0;
-            final yPos = offset;
-            
+          children: List.generate(10, (index) {
+            final animationOffset =
+                (_particleAnimation.value * 2 * 3.14159) + (index * 0.6);
+            final x =
+                size.width * 0.1 +
+                (size.width * 0.8) *
+                    ((animationOffset % (2 * 3.14159)) / (2 * 3.14159));
+            final y =
+                size.height * 0.1 +
+                (size.height * 0.8) * ((animationOffset * 0.5) % 1.0);
+
             return Positioned(
-              left: size.width * xPos,
-              top: size.height * yPos - 50,
-              child: Opacity(
-                opacity: (1.0 - offset) * 0.6,
-                child: Container(
-                  width: 4 + (index % 4) * 2,
-                  height: 4 + (index % 4) * 2,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.white.withOpacity(0.4),
-                        blurRadius: 6,
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
+              left: x,
+              top: y,
+              child: Container(
+                width: 4 + (index % 3) * 2,
+                height: 4 + (index % 3) * 2,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  shape: BoxShape.circle,
                 ),
               ),
             );
@@ -558,62 +517,119 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  Widget _buildBackButton() {
-    return Row(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
-          ),
-          child: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(
-              Icons.arrow_back_ios_rounded,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        const Spacer(),
-      ],
+  Widget _buildLoginContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          const SizedBox(height: 40),
+
+          // Header
+          _buildHeader(),
+
+          const SizedBox(height: 40),
+
+          // Login Form
+          _buildLoginForm(),
+
+          const SizedBox(height: 24),
+
+          // Divider
+          _buildDivider(),
+
+          const SizedBox(height: 24),
+
+          // Alternative logins
+          _buildAlternativeLogins(),
+
+          const SizedBox(height: 24),
+
+          // Sign up link
+          _buildSignUpLink(),
+        ],
+      ),
     );
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Welcome Back! 👋',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              shadows: [
-                Shadow(
-                  color: Colors.black.withOpacity(0.3),
-                  offset: const Offset(0, 2),
-                  blurRadius: 4,
+    return Column(
+      children: [
+        // Back button
+        Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withOpacity(0.3)),
+              ),
+              child: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: Colors.white,
                 ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 32),
+
+        // Logo and title
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(0.9),
+                Colors.white.withOpacity(0.7),
               ],
             ),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Sign in to continue your learning journey',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.white.withOpacity(0.9),
-              fontWeight: FontWeight.w500,
-            ),
+          child: const Icon(
+            Icons.school_rounded,
+            size: 40,
+            color: Color(0xFF667eea),
           ),
-        ],
-      ),
+        ),
+
+        const SizedBox(height: 24),
+
+        Text(
+          'Welcome Back!',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                color: Colors.black.withOpacity(0.3),
+                offset: const Offset(0, 2),
+                blurRadius: 4,
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        Text(
+          'Sign in to continue to MySchoolGH',
+          textAlign: TextAlign.center,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(color: Colors.white.withOpacity(0.9)),
+        ),
+      ],
     );
   }
 
@@ -635,38 +651,7 @@ class _LoginScreenState extends State<LoginScreen>
         key: _formKey,
         child: Column(
           children: [
-            // Role Selection (Optional)
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: DropdownButtonFormField<String>(
-                value: _selectedRole,
-                decoration: const InputDecoration(
-                  labelText: 'Login as (Optional)',
-                  prefixIcon: Icon(Icons.person_outline),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                ),
-                items: [
-                  DropdownMenuItem(value: AppConstants.adminRole, child: Text('Administrator')),
-                  DropdownMenuItem(value: AppConstants.teacherRole, child: Text('Teacher')),
-                  DropdownMenuItem(value: AppConstants.studentRole, child: Text('Student')),
-                  DropdownMenuItem(value: AppConstants.parentRole, child: Text('Parent')),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedRole = value;
-                  });
-                },
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Email Field
+            // Email field
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
@@ -675,16 +660,22 @@ class _LoginScreenState extends State<LoginScreen>
                 labelText: 'Email Address',
                 hintText: 'Enter your email',
                 prefixIcon: const Icon(Icons.email_outlined),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                  borderSide: BorderSide(
+                    color: AppTheme.primaryColor,
+                    width: 2,
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // Password Field
+            // Password field
             TextFormField(
               controller: _passwordController,
               obscureText: _obscurePassword,
@@ -705,102 +696,116 @@ class _LoginScreenState extends State<LoginScreen>
                         : Icons.visibility_outlined,
                   ),
                 ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                  borderSide: BorderSide(
+                    color: AppTheme.primaryColor,
+                    width: 2,
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // Remember Me & Forgot Password
+            // Remember me and forgot password
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Checkbox(
-                  value: _rememberMe,
-                  onChanged: (value) {
-                    setState(() {
-                      _rememberMe = value ?? false;
-                    });
-                    HapticFeedback.selectionClick();
-                  },
-                  activeColor: AppTheme.primaryColor,
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                      activeColor: AppTheme.primaryColor,
+                    ),
+                    const Text('Remember me'),
+                  ],
                 ),
-                const Text('Remember me'),
-                const Spacer(),
                 TextButton(
                   onPressed: () {
-                    HapticFeedback.lightImpact();
-                    // TODO: Navigate to forgot password
+                    // Handle forgot password
                   },
-                  child: const Text('Forgot Password?'),
+                  child: Text(
+                    'Forgot password?',
+                    style: TextStyle(color: AppTheme.primaryColor),
+                  ),
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _buildLoginButton() {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF4c6ef5),
-            const Color(0xFF7c3aed),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4c6ef5).withOpacity(0.4),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _login,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: _isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            const SizedBox(height: 24),
+
+            // Login button
+            Container(
+              width: double.infinity,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF667eea), Color(0xFF764ba2)],
                 ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.login_rounded,
-                    color: Colors.white,
-                    size: 22,
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Sign In',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF667eea).withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                        : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.login_rounded,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Sign In',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -858,201 +863,129 @@ class _LoginScreenState extends State<LoginScreen>
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _isBiometricLoading
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  const Color(0xFF4c6ef5),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Authenticating...',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF2D3748),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
+                  child:
+                      _isBiometricLoading
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
                                     const Color(0xFF4c6ef5),
-                                    const Color(0xFF7c3aed),
-                                  ],
+                                  ),
                                 ),
-                                borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(
-                                Icons.fingerprint,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Flexible(
-                              child: Text(
-                                'Login with Biometrics',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              const SizedBox(width: 12),
+                              Text(
+                                'Authenticating...',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF2D3748),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.security,
-                              size: 16,
-                              color: AppTheme.successColor,
-                            ),
-                          ],
-                        ),
+                            ],
+                          )
+                          : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF4c6ef5),
+                                      Color(0xFF7c3aed),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.fingerprint,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Use Biometric Authentication',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF2D3748),
+                                ),
+                              ),
+                            ],
+                          ),
                 ),
               ),
             ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Demo Login Options
-          Text(
-            'Demo Login Options:',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildDemoLoginChip('admin@demo.com', 'Admin', AppTheme.adminColor),
-              _buildDemoLoginChip('teacher@demo.com', 'Teacher', AppTheme.teacherColor),
-              _buildDemoLoginChip('student@demo.com', 'Student', AppTheme.studentColor),
-              _buildDemoLoginChip('parent@demo.com', 'Parent', AppTheme.parentColor),
-            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDemoLoginChip(String email, String role, Color color) {
-    return GestureDetector(
-      onTap: () {
-        _emailController.text = email;
-        _passwordController.text = 'demo123';
-        _selectedRole = role.toLowerCase();
-        HapticFeedback.selectionClick();
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.3)),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.2),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.person,
-                size: 12,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              role,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFooter() {
-    return Column(
+  Widget _buildSignUpLink() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Version ${AppConstants.appVersion}',
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: 12,
-          ),
+          "Don't have an account? ",
+          style: TextStyle(color: Colors.white.withOpacity(0.8)),
         ),
-        
-        const SizedBox(height: 16),
-        
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Don't have an account? ",
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            Navigator.of(context).pop();
+
+            // UPDATED: Simple slide transition for navigation to signup
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder:
+                    (context, animation, secondaryAnimation) =>
+                        const SignupScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  // Simple slide transition only
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(1.0, 0.0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  );
+                },
+                transitionDuration: const Duration(
+                  milliseconds: 300,
+                ), // Reduced duration
+              ),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.3)),
+            ),
+            child: const Text(
+              'Sign Up',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const SignupScreen()),
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white.withOpacity(0.3)),
-                ),
-                child: const Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );

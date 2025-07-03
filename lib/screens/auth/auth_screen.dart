@@ -92,39 +92,41 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         pageBuilder:
             (context, animation, secondaryAnimation) => const LoginScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // Simple slide transition only
           return SlideTransition(
             position: Tween<Offset>(
-              begin: const Offset(1.0, 0.0),
+              begin: const Offset(1.0, 0.0), // Slide from right
               end: Offset.zero,
-            ).animate(
-              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-            ),
-            child: FadeTransition(opacity: animation, child: child),
+            ).animate(animation),
+            child: child,
           );
         },
-        transitionDuration: AppConstants.mediumAnimation,
+        transitionDuration: const Duration(
+          milliseconds: 300,
+        ), // Reduced duration
       ),
     );
   }
 
-  void _navigateToSignup() {
+void _navigateToSignup() {
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder:
             (context, animation, secondaryAnimation) => const SignupScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // Simple slide transition only
           return SlideTransition(
             position: Tween<Offset>(
-              begin: const Offset(1.0, 0.0),
+              begin: const Offset(1.0, 0.0), // Slide from right
               end: Offset.zero,
-            ).animate(
-              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-            ),
-            child: FadeTransition(opacity: animation, child: child),
+            ).animate(animation),
+            child: child,
           );
         },
-        transitionDuration: AppConstants.mediumAnimation,
+        transitionDuration: const Duration(
+          milliseconds: 300,
+        ), // Reduced duration
       ),
     );
   }

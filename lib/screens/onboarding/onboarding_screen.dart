@@ -31,7 +31,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   final List<OnboardingPage> _pages = [
     OnboardingPage(
       title: '🏫 School Management\nMade Easy',
-      description: 'Transform your school into a modern digital ecosystem with powerful tools designed for the future of education.',
+      description:
+          'Transform your school into a modern digital ecosystem with powerful tools designed for the future of education.',
       icon: Icons.school_rounded,
       color: AppTheme.primaryColor,
       features: [
@@ -44,7 +45,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     ),
     OnboardingPage(
       title: '📊 Track Everything\nReal-time',
-      description: 'Get instant insights into attendance, grades, performance metrics, and school activities with beautiful visualizations.',
+      description:
+          'Get instant insights into attendance, grades, performance metrics, and school activities with beautiful visualizations.',
       icon: Icons.analytics_rounded,
       color: AppTheme.successColor,
       features: [
@@ -57,7 +59,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     ),
     OnboardingPage(
       title: '💬 Connect &\nCommunicate',
-      description: 'Bridge the gap between teachers, students, parents, and administrators with seamless communication tools.',
+      description:
+          'Bridge the gap between teachers, students, parents, and administrators with seamless communication tools.',
       icon: Icons.forum_rounded,
       color: AppTheme.secondaryColor,
       features: [
@@ -83,29 +86,29 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _pageAnimationController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _pageAnimationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+      ),
+    );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.5),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _pageAnimationController,
-      curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _pageAnimationController,
+        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
+      ),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _pageAnimationController,
-      curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _pageAnimationController,
+        curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
+      ),
+    );
 
     // Background animation
     _backgroundController = AnimationController(
@@ -113,13 +116,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       vsync: this,
     );
 
-    _backgroundAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _backgroundController,
-      curve: Curves.easeInOut,
-    ));
+    _backgroundAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _backgroundController, curve: Curves.easeInOut),
+    );
 
     // Particle animation
     _particleController = AnimationController(
@@ -140,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   void _nextPage() {
     HapticFeedback.lightImpact();
-    
+
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 600),
@@ -153,7 +152,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   void _previousPage() {
     HapticFeedback.lightImpact();
-    
+
     if (_currentPage > 0) {
       _pageController.previousPage(
         duration: const Duration(milliseconds: 600),
@@ -164,49 +163,24 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   void _finishOnboarding() {
     HapticFeedback.mediumImpact();
-    
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const AuthScreen(),
+        pageBuilder:
+            (context, animation, secondaryAnimation) => const AuthScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // Complex transition with multiple effects
-          final slideAnimation = Tween<Offset>(
-            begin: const Offset(1.0, 0.0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
-          ));
-
-          final fadeAnimation = Tween<double>(
-            begin: 0.0,
-            end: 1.0,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: const Interval(0.2, 1.0, curve: Curves.easeIn),
-          ));
-
-          final scaleAnimation = Tween<double>(
-            begin: 0.9,
-            end: 1.0,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: const Interval(0.0, 0.6, curve: Curves.easeOutBack),
-          ));
-
+          // Simple slide transition only
           return SlideTransition(
-            position: slideAnimation,
-            child: FadeTransition(
-              opacity: fadeAnimation,
-              child: ScaleTransition(
-                scale: scaleAnimation,
-                child: child,
-              ),
-            ),
+            position: Tween<Offset>(
+              begin: const Offset(1.0, 0.0), // Slide from right
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
           );
         },
-        transitionDuration: const Duration(milliseconds: 1000),
+        transitionDuration: const Duration(
+          milliseconds: 300,
+        ), // Reduced duration
       ),
     );
   }
@@ -214,7 +188,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -223,17 +197,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           children: [
             // Animated background
             _buildAnimatedBackground(size),
-            
+
             // Floating particles
             _buildFloatingParticles(size),
-            
+
             // Main content
             SafeArea(
               child: Column(
                 children: [
                   // Header with skip and progress
                   _buildHeader(),
-                  
+
                   // PageView content
                   Expanded(
                     child: PageView.builder(
@@ -267,7 +241,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       },
                     ),
                   ),
-                  
+
                   // Navigation buttons
                   _buildNavigationButtons(),
                 ],
@@ -284,7 +258,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       animation: _backgroundController,
       builder: (context, child) {
         final currentPage = _pages[_currentPage];
-        
+
         return Container(
           width: double.infinity,
           height: double.infinity,
@@ -314,7 +288,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                 ),
               ),
-              
+
               // Geometric shapes
               Positioned(
                 top: size.height * 0.15,
@@ -331,7 +305,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                 ),
               ),
-              
+
               Positioned(
                 bottom: size.height * 0.1,
                 left: -size.width * 0.3,
@@ -359,13 +333,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       animation: _particleController,
       builder: (context, child) {
         final currentColor = _pages[_currentPage].color;
-        
+
         return Stack(
           children: List.generate(12, (index) {
             final offset = (_particleAnimation.value + index * 0.12) % 1.0;
             final xPos = (index * 0.18 + offset * 0.15) % 1.0;
             final yPos = 1.0 - offset;
-            
+
             return Positioned(
               left: size.width * xPos,
               top: size.height * yPos + 50,
@@ -411,7 +385,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               TextButton(
                 onPressed: _finishOnboarding,
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   backgroundColor: Colors.grey.shade100,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -425,7 +402,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                 ),
               ),
-              
+
               // Page indicators
               Row(
                 children: List.generate(
@@ -436,36 +413,39 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     width: _currentPage == index ? 32 : 12,
                     height: 12,
                     decoration: BoxDecoration(
-                      gradient: _currentPage == index
-                          ? LinearGradient(
-                              colors: [
-                                _pages[_currentPage].color,
-                                _pages[_currentPage].color.withOpacity(0.7),
-                              ],
-                            )
-                          : null,
-                      color: _currentPage == index 
-                          ? null 
-                          : Colors.grey.shade300,
+                      gradient:
+                          _currentPage == index
+                              ? LinearGradient(
+                                colors: [
+                                  _pages[_currentPage].color,
+                                  _pages[_currentPage].color.withOpacity(0.7),
+                                ],
+                              )
+                              : null,
+                      color:
+                          _currentPage == index ? null : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(6),
-                      boxShadow: _currentPage == index
-                          ? [
-                              BoxShadow(
-                                color: _pages[_currentPage].color.withOpacity(0.4),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
+                      boxShadow:
+                          _currentPage == index
+                              ? [
+                                BoxShadow(
+                                  color: _pages[_currentPage].color.withOpacity(
+                                    0.4,
+                                  ),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                              : null,
                     ),
                   ),
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Progress text
           Text(
             '${_currentPage + 1} of ${_pages.length}',
@@ -485,12 +465,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       child: Column(
         children: [
           const SizedBox(height: 20),
-          
+
           // Hero icon with animations (made smaller for better fit)
           _buildHeroIcon(page),
-          
+
           const SizedBox(height: 32),
-          
+
           // Title
           Text(
             page.title,
@@ -502,9 +482,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               letterSpacing: -0.5,
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Description
           Text(
             page.description,
@@ -515,12 +495,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               letterSpacing: 0.2,
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Features with staggered animation
           _buildFeaturesList(page),
-          
+
           // Add bottom padding to ensure content doesn't get cut off
           const SizedBox(height: 120),
         ],
@@ -547,10 +527,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              page.color,
-              page.color.withOpacity(0.8),
-            ],
+            colors: [page.color, page.color.withOpacity(0.8)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -564,65 +541,62 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
           ],
         ),
-        child: Icon(
-          page.icon,
-          size: 50,
-          color: Colors.white,
-        ),
+        child: Icon(page.icon, size: 50, color: Colors.white),
       ),
     );
   }
 
   Widget _buildFeaturesList(OnboardingPage page) {
     return Column(
-      children: page.features.asMap().entries.map((entry) {
-        final index = entry.key;
-        final feature = entry.value;
-        
-        return AnimatedContainer(
-          duration: Duration(milliseconds: 300 + (index * 100)),
-          margin: const EdgeInsets.only(bottom: 16),
-          child: Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [page.color, page.color.withOpacity(0.8)],
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: page.color.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+      children:
+          page.features.asMap().entries.map((entry) {
+            final index = entry.key;
+            final feature = entry.value;
+
+            return AnimatedContainer(
+              duration: Duration(milliseconds: 300 + (index * 100)),
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [page.color, page.color.withOpacity(0.8)],
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: page.color.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.check_rounded,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-              
-              const SizedBox(width: 16),
-              
-              Expanded(
-                child: Text(
-                  feature,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade700,
-                    height: 1.3,
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
-                ),
+
+                  const SizedBox(width: 16),
+
+                  Expanded(
+                    child: Text(
+                      feature,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
+                        height: 1.3,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 
@@ -674,9 +648,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 ),
               ),
             ),
-          
+
           if (_currentPage > 0) const SizedBox(width: 16),
-          
+
           // Next/Get Started button
           Expanded(
             flex: _currentPage == 0 ? 1 : 1,
@@ -712,7 +686,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                      _currentPage == _pages.length - 1
+                          ? 'Get Started'
+                          : 'Next',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,

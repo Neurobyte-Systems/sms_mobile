@@ -1568,6 +1568,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
         return Transform.scale(
           scale: 1.0 + (_fabController.value * 0.1),
           child: FloatingActionButton(
+            heroTag: 'quick_actions_fab_teacher',
             onPressed: _onFabPressed,
             backgroundColor: AppTheme.teacherColor,
             elevation: 8,

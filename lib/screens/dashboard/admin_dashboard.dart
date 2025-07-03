@@ -1103,6 +1103,7 @@ class _AdminDashboardState extends State<AdminDashboard>
         return Transform.scale(
           scale: 1.0 + (_fabController.value * 0.1),
           child: FloatingActionButton(
+            heroTag: 'quick_add_fab_admin',
             onPressed: _onFabPressed,
             backgroundColor: AppTheme.adminColor,
             elevation: 8,
