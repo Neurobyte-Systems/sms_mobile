@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sms/screens/teacher/class_details_screen.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
 
@@ -1160,23 +1161,5 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     _animationController.dispose();
     _calendarController.dispose();
     super.dispose();
-  }
-}
-
-// Placeholder for ClassDetailsScreen if not already defined
-class ClassDetailsScreen extends StatelessWidget {
-  final Map<String, dynamic> classData;
-
-  const ClassDetailsScreen({Key? key, required this.classData})
-    : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(classData['subject'])),
-      body: const Center(
-        child: Text('Class Details Screen - Implementation pending'),
-      ),
-    );
   }
 }
