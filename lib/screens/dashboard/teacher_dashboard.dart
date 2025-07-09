@@ -13,6 +13,15 @@ import '../teacher/notes_screen.dart';
 import '../teacher/teacher_settings_screen.dart';
 import '../teacher/help_support_screen.dart';
 import '../teacher/notification_settings_screen.dart';
+// Advanced Teacher Features
+import '../teacher/lesson_planning_screen.dart';
+import '../teacher/parent_conference_screen.dart';
+import '../teacher/digital_whiteboard_screen.dart';
+import '../teacher/curriculum_management_screen.dart';
+import '../teacher/behavior_tracking_screen.dart';
+import '../teacher/resource_library_screen.dart';
+import '../teacher/video_integration_screen.dart';
+import '../teacher/ai_insights_screen.dart';
 
 class TeacherDashboard extends StatefulWidget {
   const TeacherDashboard({Key? key}) : super(key: key);
@@ -248,6 +257,63 @@ class _TeacherDashboardState extends State<TeacherDashboard>
     );
   }
 
+  // Advanced Teacher Features Navigation
+  void _navigateToLessonPlanning() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LessonPlanningScreen()),
+    );
+  }
+
+  void _navigateToParentConference() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ParentConferenceScreen()),
+    );
+  }
+
+  void _navigateToDigitalWhiteboard() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const DigitalWhiteboardScreen()),
+    );
+  }
+
+  void _navigateToCurriculumManagement() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CurriculumManagementScreen()),
+    );
+  }
+
+  void _navigateToBehaviorTracking() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const BehaviorTrackingScreen()),
+    );
+  }
+
+  void _navigateToResourceLibrary() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ResourceLibraryScreen()),
+    );
+  }
+
+  void _navigateToVideoIntegration() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const VideoIntegrationScreen()),
+    );
+  }
+
+  void _navigateToAIInsights() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AIInsightsScreen()),
+    );
+  }
+
   void _openDrawer() {
     HapticFeedback.lightImpact();
     _scaffoldKey.currentState?.openDrawer();
@@ -384,6 +450,72 @@ class _TeacherDashboardState extends State<TeacherDashboard>
               onTap: () {
                 Navigator.pop(context);
                 _navigateToClassNotes();
+              },
+            ),
+            const Divider(),
+            // Advanced Teacher Features
+            _buildDrawerItem(
+              icon: Icons.book_rounded,
+              title: 'Lesson Planning',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToLessonPlanning();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.event_available_rounded,
+              title: 'Parent Conference',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToParentConference();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.draw_rounded,
+              title: 'Digital Whiteboard',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToDigitalWhiteboard();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.school_rounded,
+              title: 'Curriculum Management',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToCurriculumManagement();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.psychology_rounded,
+              title: 'Behavior Tracking',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToBehaviorTracking();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.library_books_rounded,
+              title: 'Resource Library',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToResourceLibrary();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.video_library_rounded,
+              title: 'Video Integration',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToVideoIntegration();
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.insights_rounded,
+              title: 'AI Insights',
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToAIInsights();
               },
             ),
             const Divider(),
@@ -1212,16 +1344,28 @@ class _TeacherDashboardState extends State<TeacherDashboard>
         'onTap': _navigateToMessageParents,
       },
       {
-        'title': 'Class Notes',
-        'icon': Icons.note_alt_rounded,
+        'title': 'Lesson Planning',
+        'icon': Icons.book_rounded,
         'color': AppTheme.teacherColor,
-        'onTap': _navigateToClassNotes,
+        'onTap': _navigateToLessonPlanning,
       },
       {
-        'title': 'Schedule',
-        'icon': Icons.schedule_rounded,
+        'title': 'Digital Whiteboard',
+        'icon': Icons.draw_rounded,
         'color': Colors.indigo,
-        'onTap': _navigateToSchedule,
+        'onTap': _navigateToDigitalWhiteboard,
+      },
+      {
+        'title': 'AI Insights',
+        'icon': Icons.insights_rounded,
+        'color': Colors.purple,
+        'onTap': _navigateToAIInsights,
+      },
+      {
+        'title': 'Video Integration',
+        'icon': Icons.video_library_rounded,
+        'color': Colors.red,
+        'onTap': _navigateToVideoIntegration,
       },
     ];
 
@@ -1639,6 +1783,30 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                 Icons.grade_rounded,
                 AppTheme.warningColor,
                 _navigateToGradePapers,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildQuickActionItem(
+                'Lesson Plan',
+                Icons.book_rounded,
+                AppTheme.teacherColor,
+                _navigateToLessonPlanning,
+              ),
+              _buildQuickActionItem(
+                'Whiteboard',
+                Icons.draw_rounded,
+                Colors.indigo,
+                _navigateToDigitalWhiteboard,
+              ),
+              _buildQuickActionItem(
+                'AI Insights',
+                Icons.insights_rounded,
+                Colors.purple,
+                _navigateToAIInsights,
               ),
             ],
           ),
