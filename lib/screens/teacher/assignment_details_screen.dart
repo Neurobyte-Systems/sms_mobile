@@ -138,7 +138,11 @@ class _AssignmentDetailsScreenState extends State<AssignmentDetailsScreen>
           Icons.arrow_back_ios_rounded,
           color: Color(0xFF2D3748),
         ),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        },
       ),
       actions: [
         IconButton(

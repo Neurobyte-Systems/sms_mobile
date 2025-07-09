@@ -10,6 +10,9 @@ import '../teacher/messages_screen.dart';
 import '../teacher/profile_screen.dart';
 import '../teacher/schedule_screen.dart';
 import '../teacher/notes_screen.dart';
+import '../teacher/teacher_settings_screen.dart';
+import '../teacher/help_support_screen.dart';
+import '../teacher/notification_settings_screen.dart';
 
 class TeacherDashboard extends StatefulWidget {
   const TeacherDashboard({Key? key}) : super(key: key);
@@ -389,7 +392,10 @@ class _TeacherDashboardState extends State<TeacherDashboard>
               title: 'Settings',
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to settings
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TeacherSettingsScreen()),
+                );
               },
             ),
             _buildDrawerItem(
@@ -397,7 +403,10 @@ class _TeacherDashboardState extends State<TeacherDashboard>
               title: 'Help & Support',
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to help
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
+                );
               },
             ),
             _buildDrawerItem(

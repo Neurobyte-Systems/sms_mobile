@@ -205,12 +205,14 @@ class _MessagesScreenState extends State<MessagesScreen>
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  _buildTabBar(),
-                  _buildStatsRow(),
-                  Expanded(child: _buildMessagesList()),
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(child: _buildHeader()),
+                  SliverToBoxAdapter(child: _buildTabBar()),
+                  SliverToBoxAdapter(child: _buildStatsRow()),
+                  SliverToBoxAdapter(child: const SizedBox(height: 16)),
+                  _buildMessagesSliver(),
+                  SliverToBoxAdapter(child: const SizedBox(height: 100)),
                 ],
               ),
             ),
@@ -234,7 +236,11 @@ class _MessagesScreenState extends State<MessagesScreen>
           Icons.arrow_back_ios_rounded,
           color: Color(0xFF2D3748),
         ),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        },
       ),
       actions: [
         IconButton(
@@ -491,40 +497,118 @@ class _MessagesScreenState extends State<MessagesScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: color.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(
+          color: color.withOpacity(0.1),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color.withOpacity(0.1),
+                  color.withOpacity(0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             value,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.w800,
               color: color,
             ),
           ),
+          const SizedBox(height: 2),
           Text(
             title,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMessagesSliver() {
+    final filteredMessages = _filteredMessages;
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          if (index == 0) {
+            // Header row
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  Text(
+                    '${filteredMessages.length} Messages',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF2D3748),
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: _markAllAsRead,
+                    child: Text(
+                      'Mark All Read',
+                      style: TextStyle(color: AppTheme.primaryColor),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final messageIndex = index - 1;
+          if (messageIndex >= filteredMessages.length) return null;
+
+          return TweenAnimationBuilder<double>(
+            duration: Duration(milliseconds: 300 + (messageIndex * 50)),
+            tween: Tween(begin: 0.0, end: 1.0),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Transform.translate(
+                offset: Offset(0, 20 * (1 - value)),
+                child: Opacity(
+                  opacity: value,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                    child: _buildMessageCard(
+                      filteredMessages[messageIndex],
+                      messageIndex,
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        childCount: filteredMessages.length + 1, // +1 for header
       ),
     );
   }
@@ -600,21 +684,29 @@ class _MessagesScreenState extends State<MessagesScreen>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Material(
-        elevation: 2,
-        borderRadius: BorderRadius.circular(16),
+        elevation: isRead ? 1 : 4,
+        borderRadius: BorderRadius.circular(20),
+        shadowColor: roleColor.withOpacity(0.2),
         child: InkWell(
           onTap: () => _openMessage(message),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: isRead ? Colors.white : roleColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
+              color: isRead ? Colors.white : roleColor.withOpacity(0.03),
               border: Border.all(
-                color:
-                    isRead ? Colors.grey.shade200 : roleColor.withOpacity(0.3),
+                color: isRead ? Colors.grey.shade200 : roleColor.withOpacity(0.2),
                 width: isRead ? 1 : 2,
               ),
+              gradient: !isRead ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  roleColor.withOpacity(0.02),
+                  Colors.white,
+                ],
+              ) : null,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -624,13 +716,22 @@ class _MessagesScreenState extends State<MessagesScreen>
                   children: [
                     // Sender Avatar
                     Container(
-                      width: 50,
-                      height: 50,
+                      width: 56,
+                      height: 56,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [roleColor, roleColor.withOpacity(0.8)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [roleColor, roleColor.withOpacity(0.7)],
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: roleColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Center(
                         child: Text(
@@ -641,7 +742,7 @@ class _MessagesScreenState extends State<MessagesScreen>
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 18,
                           ),
                         ),
                       ),
@@ -853,6 +954,7 @@ class _MessagesScreenState extends State<MessagesScreen>
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
+      heroTag: "messages_compose_fab",
       onPressed: _composeMessage,
       backgroundColor: AppTheme.primaryColor,
       icon: const Icon(Icons.edit_rounded, color: Colors.white),
@@ -1040,7 +1142,11 @@ class MessageDetailsScreen extends StatelessWidget {
             Icons.arrow_back_ios_rounded,
             color: Color(0xFF2D3748),
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          },
         ),
         actions: [
           IconButton(
@@ -1318,7 +1424,11 @@ class _ComposeMessageScreenState extends State<ComposeMessageScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded, color: Color(0xFF2D3748)),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          },
         ),
         actions: [
           TextButton(

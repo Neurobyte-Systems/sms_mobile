@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
+import 'notification_settings_screen.dart';
+import 'help_support_screen.dart';
+import 'teacher_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -1392,16 +1395,25 @@ class _ProfileScreenState extends State<ProfileScreen>
         _showChangePasswordDialog();
         break;
       case 'Notification Settings':
-        _showNotificationSettings();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
+        );
         break;
       case 'Privacy Settings':
-        _showPrivacySettings();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const TeacherSettingsScreen()),
+        );
         break;
       case 'Download Profile':
         _downloadProfile();
         break;
       case 'Help & Support':
-        _showHelpSupport();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
+        );
         break;
       case 'Logout':
         _showLogoutDialog();

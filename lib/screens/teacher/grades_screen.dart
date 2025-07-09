@@ -3,6 +3,11 @@ import 'package:flutter/services.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
 import 'assignments_screen.dart';
+import 'student_details_screen.dart';
+import 'class_report_screen.dart';
+import 'assessment_analytics_screen.dart';
+import 'new_assessment_screen.dart';
+import 'report_builder_screen.dart';
 
 class GradesScreen extends StatefulWidget {
   const GradesScreen({Key? key}) : super(key: key);
@@ -495,7 +500,11 @@ class _GradesScreenState extends State<GradesScreen>
           Icons.arrow_back_ios_rounded,
           color: Color(0xFF2D3748),
         ),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        },
       ),
               actions: [
           IconButton(
@@ -1315,6 +1324,20 @@ class _GradesScreenState extends State<GradesScreen>
 
   // Action Methods
   void _showStudentDetails(Map<String, dynamic> student) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudentDetailsScreen(
+          student: student,
+          selectedClass: _selectedClass,
+          selectedSubject: _selectedSubject,
+          selectedTerm: _selectedTerm,
+        ),
+      ),
+    );
+  }
+
+  void _showStudentDetailsOld(Map<String, dynamic> student) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -1679,43 +1702,637 @@ class _GradesScreenState extends State<GradesScreen>
   }
 
   void _addNewAssessment() {
-    // Navigate to assignments screen to create new assessment
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const AssignmentsScreen(),
+        builder: (context) => NewAssessmentScreen(
+          initialClass: _selectedClass,
+          initialSubject: _selectedSubject,
+          initialTerm: _selectedTerm,
+        ),
       ),
     );
   }
 
   void _showAnalytics() {
-    // Show analytics
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Analytics view'),
-        backgroundColor: AppTheme.primaryColor,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AssessmentAnalyticsScreen(
+          selectedClass: _selectedClass,
+          selectedSubject: _selectedSubject,
+          selectedTerm: _selectedTerm,
+          studentsData: _students,
+        ),
       ),
     );
   }
 
   void _showMoreOptions() {
-    // Show more options
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('More options'),
-        backgroundColor: AppTheme.primaryColor,
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'More Options',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF2D3748),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // Export Class Report
+            _buildMoreOption(
+              Icons.download_rounded,
+              'Export Class Report',
+              'Download class assessment report',
+              () {
+                Navigator.pop(context);
+                _showExportDialog();
+              },
+            ),
+            
+            // Custom Report Builder
+            _buildMoreOption(
+              Icons.build_rounded,
+              'Custom Report Builder',
+              'Create custom reports with advanced options',
+              () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ReportBuilderScreen()),
+                );
+              },
+            ),
+            
+            // Print Class Report
+            _buildMoreOption(
+              Icons.print_rounded,
+              'Print Class Report',
+              'Print class assessment report',
+              () {
+                Navigator.pop(context);
+                _showPrintDialog();
+              },
+            ),
+            
+            // Assessment Settings
+            _buildMoreOption(
+              Icons.settings_rounded,
+              'Assessment Settings',
+              'Configure grading and assessment settings',
+              () {
+                Navigator.pop(context);
+                _showSettingsDialog();
+              },
+            ),
+            
+            // Import Grades
+            _buildMoreOption(
+              Icons.upload_rounded,
+              'Import Grades',
+              'Import grades from CSV or Excel file',
+              () {
+                Navigator.pop(context);
+                _showImportDialog();
+              },
+            ),
+            
+            // Backup Data
+            _buildMoreOption(
+              Icons.backup_rounded,
+              'Backup Data',
+              'Create backup of all assessment data',
+              () {
+                Navigator.pop(context);
+                _showBackupDialog();
+              },
+            ),
+            
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
 
   void _showSortOptions() {
-    // Show sort options
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sort options'),
-        backgroundColor: AppTheme.primaryColor,
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Sort Options',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF2D3748),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // Sort by Grade (High to Low)
+            _buildSortOption(
+              Icons.trending_down_rounded,
+              'Grade (High to Low)',
+              'Sort students by cumulative grade descending',
+              () {
+                Navigator.pop(context);
+                _sortStudents('grade_desc');
+              },
+            ),
+            
+            // Sort by Grade (Low to High)
+            _buildSortOption(
+              Icons.trending_up_rounded,
+              'Grade (Low to High)',
+              'Sort students by cumulative grade ascending',
+              () {
+                Navigator.pop(context);
+                _sortStudents('grade_asc');
+              },
+            ),
+            
+            // Sort by Name (A-Z)
+            _buildSortOption(
+              Icons.sort_by_alpha_rounded,
+              'Name (A-Z)',
+              'Sort students alphabetically by name',
+              () {
+                Navigator.pop(context);
+                _sortStudents('name_asc');
+              },
+            ),
+            
+            // Sort by Name (Z-A)
+            _buildSortOption(
+              Icons.sort_by_alpha_rounded,
+              'Name (Z-A)',
+              'Sort students reverse alphabetically by name',
+              () {
+                Navigator.pop(context);
+                _sortStudents('name_desc');
+              },
+            ),
+            
+            // Sort by Performance Trend
+            _buildSortOption(
+              Icons.show_chart_rounded,
+              'Performance Trend',
+              'Sort by improvement/decline trend',
+              () {
+                Navigator.pop(context);
+                _sortStudents('trend');
+              },
+            ),
+            
+            // Sort by Attendance
+            _buildSortOption(
+              Icons.event_available_rounded,
+              'Attendance',
+              'Sort by attendance percentage',
+              () {
+                Navigator.pop(context);
+                _sortStudents('attendance');
+              },
+            ),
+            
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
+  }
+
+  // Helper methods for more options
+  Widget _buildMoreOption(IconData icon, String title, String subtitle, VoidCallback onTap) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: AppTheme.primaryColor, size: 20),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF2D3748),
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          fontSize: 12,
+          color: Colors.grey.shade600,
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildSortOption(IconData icon, String title, String subtitle, VoidCallback onTap) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: AppTheme.primaryColor, size: 20),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF2D3748),
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          fontSize: 12,
+          color: Colors.grey.shade600,
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  // Dialog methods for more options
+  void _showExportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.download_rounded, color: AppTheme.primaryColor),
+            const SizedBox(width: 8),
+            const Text('Export Class Report'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Choose export format:'),
+            const SizedBox(height: 16),
+            _buildExportOption(Icons.picture_as_pdf_rounded, 'PDF Report', 'Detailed PDF with charts', () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Exporting as PDF Report...'),
+                  backgroundColor: AppTheme.successColor,
+                ),
+              );
+            }),
+            _buildExportOption(Icons.table_chart_rounded, 'Excel File', 'Spreadsheet with all data', () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Exporting as Excel File...'),
+                  backgroundColor: AppTheme.successColor,
+                ),
+              );
+            }),
+            _buildExportOption(Icons.insert_drive_file_rounded, 'CSV File', 'Comma-separated values', () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Exporting as CSV File...'),
+                  backgroundColor: AppTheme.successColor,
+                ),
+              );
+            }),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPrintDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.print_rounded, color: AppTheme.primaryColor),
+            const SizedBox(width: 8),
+            const Text('Print Class Report'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('This will print the complete class assessment report for:'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Class: $_selectedClass'),
+                  Text('Subject: $_selectedSubject'),
+                  Text('Term: $_selectedTerm'),
+                  Text('Students: ${_students.length}'),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Printing class report...'),
+                  backgroundColor: AppTheme.successColor,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+            child: const Text('Print', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.settings_rounded, color: AppTheme.primaryColor),
+            const SizedBox(width: 8),
+            const Text('Assessment Settings'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Configure assessment and grading settings:'),
+            const SizedBox(height: 16),
+            _buildSettingOption(Icons.calculate_rounded, 'Grading Scale', 'Configure grade boundaries'),
+            _buildSettingOption(Icons.schedule_rounded, 'Assessment Weights', 'Adjust weight percentages'),
+            _buildSettingOption(Icons.notifications_rounded, 'Notifications', 'Grade alert settings'),
+            _buildSettingOption(Icons.backup_rounded, 'Data Backup', 'Automatic backup settings'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showImportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.upload_rounded, color: AppTheme.primaryColor),
+            const SizedBox(width: 8),
+            const Text('Import Grades'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Import grades from file:'),
+            const SizedBox(height: 16),
+            _buildImportOption(Icons.table_chart_rounded, 'Excel File', 'Import from .xlsx or .xls'),
+            _buildImportOption(Icons.insert_drive_file_rounded, 'CSV File', 'Import from .csv file'),
+            _buildImportOption(Icons.cloud_upload_rounded, 'Google Sheets', 'Import from Google Sheets'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showBackupDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.backup_rounded, color: AppTheme.primaryColor),
+            const SizedBox(width: 8),
+            const Text('Backup Data'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Create backup of assessment data:'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('• All student grades'),
+                  const Text('• Assessment configurations'),
+                  const Text('• Class and subject data'),
+                  const Text('• Historical performance data'),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Creating backup...'),
+                  backgroundColor: AppTheme.successColor,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+            child: const Text('Create Backup', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  Widget _buildSettingOption(IconData icon, String title, String subtitle) {
+    return ListTile(
+      leading: Icon(icon, color: AppTheme.primaryColor),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: () {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Opening $title settings...'),
+            backgroundColor: AppTheme.primaryColor,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildImportOption(IconData icon, String title, String subtitle) {
+    return ListTile(
+      leading: Icon(icon, color: AppTheme.primaryColor),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+      onTap: () {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Importing from $title...'),
+            backgroundColor: AppTheme.successColor,
+          ),
+        );
+      },
+    );
+  }
+
+  // Sort functionality
+  void _sortStudents(String sortType) {
+    setState(() {
+      switch (sortType) {
+        case 'grade_desc':
+          _students.sort((a, b) => b['cumulativeGrade'].compareTo(a['cumulativeGrade']));
+          break;
+        case 'grade_asc':
+          _students.sort((a, b) => a['cumulativeGrade'].compareTo(b['cumulativeGrade']));
+          break;
+        case 'name_asc':
+          _students.sort((a, b) => a['name'].compareTo(b['name']));
+          break;
+        case 'name_desc':
+          _students.sort((a, b) => b['name'].compareTo(a['name']));
+          break;
+        case 'trend':
+          _students.sort((a, b) {
+            final trendA = a['trend'] as String;
+            final trendB = b['trend'] as String;
+            // Sort by trend: up first, stable second, down last
+            if (trendA == 'up' && trendB != 'up') return -1;
+            if (trendB == 'up' && trendA != 'up') return 1;
+            if (trendA == 'stable' && trendB == 'down') return -1;
+            if (trendB == 'stable' && trendA == 'down') return 1;
+            return 0;
+          });
+          break;
+        case 'attendance':
+          _students.sort((a, b) {
+            final attendanceA = a['assessments']['attendance'] as num;
+            final attendanceB = b['assessments']['attendance'] as num;
+            return attendanceB.compareTo(attendanceA);
+          });
+          break;
+      }
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Students sorted by ${_getSortDisplayName(sortType)}'),
+        backgroundColor: AppTheme.successColor,
+      ),
+    );
+  }
+
+  String _getSortDisplayName(String sortType) {
+    switch (sortType) {
+      case 'grade_desc': return 'Grade (High to Low)';
+      case 'grade_asc': return 'Grade (Low to High)';
+      case 'name_asc': return 'Name (A-Z)';
+      case 'name_desc': return 'Name (Z-A)';
+      case 'trend': return 'Performance Trend';
+      case 'attendance': return 'Attendance';
+      default: return 'Grade';
+    }
   }
 
   // Helper methods for detailed student view
@@ -2006,77 +2623,14 @@ class _GradesScreenState extends State<GradesScreen>
   }
 
   void _exportClassReport() {
-    HapticFeedback.lightImpact();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Export $_selectedClass Report',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 20),
-            _buildExportOption(
-              Icons.picture_as_pdf_rounded,
-              'Export as PDF',
-              'Complete assessment report with charts',
-              () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Exporting $_selectedClass report as PDF...'),
-                    backgroundColor: AppTheme.successColor,
-                  ),
-                );
-              },
-            ),
-            _buildExportOption(
-              Icons.table_chart_rounded,
-              'Export as Excel',
-              'Spreadsheet with all student data',
-              () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Exporting $_selectedClass report as Excel...'),
-                    backgroundColor: AppTheme.successColor,
-                  ),
-                );
-              },
-            ),
-            _buildExportOption(
-              Icons.share_rounded,
-              'Share Report',
-              'Share via email or messaging',
-              () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Sharing $_selectedClass report...'),
-                    backgroundColor: AppTheme.successColor,
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-          ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClassReportScreen(
+          selectedClass: _selectedClass,
+          selectedSubject: _selectedSubject,
+          selectedTerm: _selectedTerm,
+          studentsData: _students,
         ),
       ),
     );
