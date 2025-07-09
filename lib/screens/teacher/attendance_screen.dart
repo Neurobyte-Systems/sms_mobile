@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../utils/app_theme.dart';
-// import '../../utils/constants.dart';
+import '../../utils/constants.dart';
 
 class AttendanceScreen extends StatefulWidget {
-  const AttendanceScreen({Key? key}) : super(key: key);
+  final String attendanceType; // 'daily' or 'subject'
+  final String? subject; // Subject name for subject-based attendance
+  final String? className; // Class name for subject-based attendance
+  
+  const AttendanceScreen({
+    Key? key,
+    this.attendanceType = 'daily',
+    this.subject,
+    this.className,
+  }) : super(key: key);
 
   @override
   State<AttendanceScreen> createState() => _AttendanceScreenState();
@@ -16,15 +25,28 @@ class _AttendanceScreenState extends State<AttendanceScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
+  String _selectedAttendanceType = 'daily';
   String _selectedClass = 'Class 10A - Mathematics';
+  String _selectedSubject = 'Mathematics';
   DateTime _selectedDate = DateTime.now();
   bool _isMarkingMode = false;
 
+  final List<String> _attendanceTypes = ['daily', 'subject'];
   final List<String> _classes = [
     'Class 10A - Mathematics',
     'Class 10B - Physics',
     'Class 11A - Chemistry',
     'Class 12A - Advanced Math',
+  ];
+
+  final List<String> _subjects = [
+    'Mathematics',
+    'Physics',
+    'Chemistry',
+    'Biology',
+    'English',
+    'History',
+    'Geography',
   ];
 
   final List<Map<String, dynamic>> _students = [
@@ -97,7 +119,18 @@ class _AttendanceScreenState extends State<AttendanceScreen>
   @override
   void initState() {
     super.initState();
+    _initializeFromParams();
     _initializeAnimations();
+  }
+
+  void _initializeFromParams() {
+    _selectedAttendanceType = widget.attendanceType;
+    if (widget.subject != null) {
+      _selectedSubject = widget.subject!;
+    }
+    if (widget.className != null) {
+      _selectedClass = widget.className!;
+    }
   }
 
   void _initializeAnimations() {
@@ -130,6 +163,16 @@ class _AttendanceScreenState extends State<AttendanceScreen>
   int get _lateCount => _students.where((s) => s['status'] == 'late').length;
   double get _attendancePercentage => (_presentCount + _lateCount) / _students.length * 100;
 
+  String get _screenTitle {
+    return _selectedAttendanceType == 'daily' ? 'Daily Attendance' : 'Subject Attendance';
+  }
+
+  String get _screenSubtitle {
+    return _selectedAttendanceType == 'daily' 
+        ? 'Morning attendance for all subjects'
+        : 'Attendance for $_selectedSubject';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,16 +185,58 @@ class _AttendanceScreenState extends State<AttendanceScreen>
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  _buildClassSelector(),
-                  _buildDateSelector(),
-                  _buildStatsCards(),
-                  _buildActionButtons(),
-                  Expanded(
-                    child: _buildStudentsList(),
+              child: CustomScrollView(
+                slivers: [
+                  // Header Section
+                  SliverToBoxAdapter(child: _buildHeader()),
+
+                  // Attendance Type Selector
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildAttendanceTypeSelector(),
+                        const SizedBox(height: 16),
+                        _buildClassAndSubjectSelector(),
+                        const SizedBox(height: 16),
+                        _buildDateSelector(),
+                        const SizedBox(height: 16),
+                        _buildStatsCards(),
+                        const SizedBox(height: 16),
+                        _buildActionButtons(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
+
+                  // Students List Header
+                  SliverToBoxAdapter(child: _buildStudentsListHeader()),
+
+                  // Students List
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return TweenAnimationBuilder<double>(
+                          duration: Duration(milliseconds: 300 + (index * 50)),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0, 20 * (1 - value)),
+                              child: Opacity(
+                                opacity: value,
+                                child: _buildStudentCard(_students[index], index),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      childCount: _students.length,
+                    ),
+                  ),
+
+                  // Bottom padding
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
                 ],
               ),
             ),
@@ -166,9 +251,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
-      title: const Text(
-        'Attendance',
-        style: TextStyle(
+      title: Text(
+        _screenTitle,
+        style: const TextStyle(
           fontWeight: FontWeight.w800,
           color: Color(0xFF2D3748),
         ),
@@ -195,7 +280,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -211,15 +296,15 @@ class _AttendanceScreenState extends State<AttendanceScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Daily Attendance',
+                  _screenTitle,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF2D3748),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
-                  'Track and manage student attendance',
+                  _screenSubtitle,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: const Color(0xFF4A5568),
                   ),
@@ -228,15 +313,15 @@ class _AttendanceScreenState extends State<AttendanceScreen>
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppTheme.successColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               Icons.how_to_reg_rounded,
               color: AppTheme.successColor,
-              size: 32,
+              size: 28,
             ),
           ),
         ],
@@ -244,10 +329,10 @@ class _AttendanceScreenState extends State<AttendanceScreen>
     );
   }
 
-  Widget _buildClassSelector() {
+  Widget _buildAttendanceTypeSelector() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -259,31 +344,125 @@ class _AttendanceScreenState extends State<AttendanceScreen>
           ),
         ],
       ),
-      child: DropdownButtonFormField<String>(
-        value: _selectedClass,
-        decoration: const InputDecoration(
-          labelText: 'Select Class',
-          border: InputBorder.none,
-          prefixIcon: Icon(Icons.class_rounded),
-        ),
-        items: _classes.map((className) {
-          return DropdownMenuItem(
-            value: className,
-            child: Text(className),
+      child: Row(
+        children: _attendanceTypes.map((type) {
+          final isSelected = _selectedAttendanceType == type;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  _selectedAttendanceType = type;
+                });
+              },
+              child: AnimatedContainer(
+                duration: AppConstants.shortAnimation,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppTheme.primaryColor : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  type == 'daily' ? 'Daily' : 'Subject',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? Colors.white : Colors.grey.shade600,
+                  ),
+                ),
+              ),
+            ),
           );
         }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _selectedClass = value!;
-          });
-        },
+      ),
+    );
+  }
+
+  Widget _buildClassAndSubjectSelector() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: [
+          // Class Selector
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: DropdownButtonFormField<String>(
+              value: _selectedClass,
+              decoration: const InputDecoration(
+                labelText: 'Select Class',
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.class_rounded),
+              ),
+              items: _classes.map((className) {
+                return DropdownMenuItem(
+                  value: className,
+                  child: Text(className),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedClass = value!;
+                });
+              },
+            ),
+          ),
+          
+          // Subject Selector (only for subject-based attendance)
+          if (_selectedAttendanceType == 'subject') ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: DropdownButtonFormField<String>(
+                value: _selectedSubject,
+                decoration: const InputDecoration(
+                  labelText: 'Select Subject',
+                  border: InputBorder.none,
+                  prefixIcon: Icon(Icons.subject_rounded),
+                ),
+                items: _subjects.map((subject) {
+                  return DropdownMenuItem(
+                    value: subject,
+                    child: Text(subject),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedSubject = value!;
+                  });
+                },
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
 
   Widget _buildDateSelector() {
     return Container(
-      margin: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
           Expanded(
@@ -444,7 +623,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
 
   Widget _buildActionButtons() {
     return Container(
-      margin: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
           Expanded(
@@ -483,52 +662,25 @@ class _AttendanceScreenState extends State<AttendanceScreen>
     );
   }
 
-  Widget _buildStudentsList() {
+  Widget _buildStudentsListHeader() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              const Text(
-                'Students',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF2D3748),
-                ),
-              ),
-              const Spacer(),
-              Text(
-                '${_students.length} total',
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 14,
-                ),
-              ),
-            ],
+          const Text(
+            'Students',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF2D3748),
+            ),
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _students.length,
-              itemBuilder: (context, index) {
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 300 + (index * 50)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, child) {
-                    return Transform.translate(
-                      offset: Offset(0, 20 * (1 - value)),
-                      child: Opacity(
-                        opacity: value,
-                        child: _buildStudentCard(_students[index], index),
-                      ),
-                    );
-                  },
-                );
-              },
+          const Spacer(),
+          Text(
+            '${_students.length} total',
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 14,
             ),
           ),
         ],
@@ -560,7 +712,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.fromLTRB(24, 0, 24, 12),
       child: Material(
         elevation: 2,
         borderRadius: BorderRadius.circular(16),
@@ -797,8 +949,10 @@ class _AttendanceScreenState extends State<AttendanceScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text('Type: ${_selectedAttendanceType.toUpperCase()}'),
             Text('Date: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'),
             Text('Class: $_selectedClass'),
+            if (_selectedAttendanceType == 'subject') Text('Subject: $_selectedSubject'),
             const SizedBox(height: 8),
             Text('Present: $_presentCount'),
             Text('Absent: $_absentCount'),

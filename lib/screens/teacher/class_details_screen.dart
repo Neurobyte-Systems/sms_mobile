@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sms/screens/teacher/attendance_screen.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
 
@@ -1473,11 +1474,14 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen>
   }
 
   void _takeAttendance() {
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Opening attendance screen...'),
-        backgroundColor: AppTheme.successColor,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AttendanceScreen(
+          attendanceType: 'subject',
+          // subject: classData['subject'],
+          // className: classData['class'],
+        ),
       ),
     );
   }

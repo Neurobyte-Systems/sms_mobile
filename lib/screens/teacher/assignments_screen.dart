@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
+import 'assignment_details_screen.dart';
+import 'assignment_submissions_screen.dart';
+import 'assignment_edit_screen.dart';
+import 'assignment_export_screen.dart';
+import 'assignment_analytics_screen.dart';
+import 'assignment_settings_screen.dart';
 
 class AssignmentsScreen extends StatefulWidget {
   const AssignmentsScreen({Key? key}) : super(key: key);
@@ -165,12 +171,56 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  _buildFilterTabs(),
-                  _buildStatsRow(),
-                  Expanded(child: _buildAssignmentsList()),
+              child: CustomScrollView(
+                slivers: [
+                  // Header Section
+                  SliverToBoxAdapter(child: _buildHeader()),
+
+                  // Filter Tabs and Stats
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildFilterTabs(),
+                        const SizedBox(height: 16),
+                        _buildStatsRow(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+
+                  // Assignments List Header
+                  SliverToBoxAdapter(child: _buildAssignmentsListHeader()),
+
+                  // Assignments List
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final filteredAssignments = _filteredAssignments;
+                        return TweenAnimationBuilder<double>(
+                          duration: Duration(milliseconds: 300 + (index * 50)),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0, 20 * (1 - value)),
+                              child: Opacity(
+                                opacity: value,
+                                child: _buildAssignmentCard(
+                                  filteredAssignments[index],
+                                  index,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      childCount: _filteredAssignments.length,
+                    ),
+                  ),
+
+                  // Bottom padding
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
                 ],
               ),
             ),
@@ -211,7 +261,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [AppTheme.primaryColor.withOpacity(0.1), Colors.transparent],
@@ -230,7 +280,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
                     color: const Color(0xFF2D3748),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
                   'Create and manage student assignments',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -241,15 +291,15 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               Icons.assignment_rounded,
               color: AppTheme.primaryColor,
-              size: 32,
+              size: 28,
             ),
           ),
         ],
@@ -263,68 +313,68 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children:
-              _filters.map((filter) {
-                final isSelected = _selectedFilter == filter;
-                return GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    setState(() {
-                      _selectedFilter = filter;
-                    });
-                  },
-                  child: AnimatedContainer(
-                    duration: AppConstants.shortAnimation,
-                    margin: const EdgeInsets.only(right: 12),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppTheme.primaryColor : Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(
-                        color:
-                            isSelected
-                                ? AppTheme.primaryColor
-                                : Colors.grey.shade300,
-                      ),
-                      boxShadow:
-                          isSelected
-                              ? [
-                                BoxShadow(
-                                  color: AppTheme.primaryColor.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                              : null,
-                    ),
-                    child: Text(
-                      filter,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey.shade700,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+          children: _filters.map((filter) {
+            final isSelected = _selectedFilter == filter;
+            return GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  _selectedFilter = filter;
+                });
+              },
+              child: AnimatedContainer(
+                duration: AppConstants.shortAnimation,
+                margin: const EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppTheme.primaryColor : Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(
+                    color: isSelected
+                        ? AppTheme.primaryColor
+                        : Colors.grey.shade300,
                   ),
-                );
-              }).toList(),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: AppTheme.primaryColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                ),
+                child: Text(
+                  filter,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.grey.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
   }
 
   Widget _buildStatsRow() {
-    final activeCount =
-        _assignments.where((a) => a['status'] == 'active').length;
-    final overdueCount =
-        _assignments.where((a) => a['status'] == 'overdue').length;
-    final completedCount =
-        _assignments.where((a) => a['status'] == 'completed').length;
+    final activeCount = _assignments.where((a) => a['status'] == 'active').length;
+    final overdueCount = _assignments.where((a) => a['status'] == 'overdue').length;
+    final completedCount = _assignments.where((a) => a['status'] == 'completed').length;
 
     return Container(
-      margin: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
           Expanded(
@@ -415,68 +465,38 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
     );
   }
 
-  Widget _buildAssignmentsList() {
+  Widget _buildAssignmentsListHeader() {
     final filteredAssignments = _filteredAssignments;
-
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Text(
-                '${filteredAssignments.length} Assignments',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF2D3748),
-                ),
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: _sortAssignments,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.sort_rounded,
-                      size: 16,
-                      color: AppTheme.primaryColor,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Sort',
-                      style: TextStyle(color: AppTheme.primaryColor),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          Text(
+            '${filteredAssignments.length} Assignments',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF2D3748),
+            ),
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredAssignments.length,
-              itemBuilder: (context, index) {
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 300 + (index * 50)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, child) {
-                    return Transform.translate(
-                      offset: Offset(0, 20 * (1 - value)),
-                      child: Opacity(
-                        opacity: value,
-                        child: _buildAssignmentCard(
-                          filteredAssignments[index],
-                          index,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+          const Spacer(),
+          TextButton(
+            onPressed: _sortAssignments,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.sort_rounded,
+                  size: 16,
+                  color: AppTheme.primaryColor,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Sort',
+                  style: TextStyle(color: AppTheme.primaryColor),
+                ),
+              ],
             ),
           ),
         ],
@@ -489,11 +509,10 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
     final statusColor = _getStatusColor(status);
     final priority = assignment['priority'] as String;
     final priorityColor = _getPriorityColor(priority);
-    final submissionRate =
-        (assignment['submitted'] as int) / (assignment['totalStudents'] as int);
+    final submissionRate = (assignment['submitted'] as int) / (assignment['totalStudents'] as int);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
       child: Material(
         elevation: 2,
         borderRadius: BorderRadius.circular(20),
@@ -720,7 +739,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
                       child: OutlinedButton.icon(
                         onPressed: () => _viewSubmissions(assignment),
                         icon: const Icon(Icons.visibility_rounded, size: 16),
-                        label: const Text('View Submissions'),
+                        label: const Text('Submissions'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: statusColor,
                           side: BorderSide(color: statusColor),
@@ -811,32 +830,31 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
   void _showSearchDialog() {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text('Search Assignments'),
+        content: TextField(
+          decoration: InputDecoration(
+            hintText: 'Enter assignment title...',
+            prefixIcon: const Icon(Icons.search_rounded),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            title: const Text('Search Assignments'),
-            content: TextField(
-              decoration: InputDecoration(
-                hintText: 'Enter assignment title...',
-                prefixIcon: const Icon(Icons.search_rounded),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Search'),
-              ),
-            ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Search'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -844,44 +862,64 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+            const SizedBox(height: 20),
+            _buildOptionItem(
+              Icons.download_rounded,
+              'Export Assignments',
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AssignmentExportScreen(),
                   ),
-                ),
-                const SizedBox(height: 20),
-                _buildOptionItem(
-                  Icons.download_rounded,
-                  'Export Assignments',
-                  () {},
-                ),
-                _buildOptionItem(
-                  Icons.analytics_rounded,
-                  'View Analytics',
-                  () {},
-                ),
-                _buildOptionItem(
-                  Icons.settings_rounded,
-                  'Assignment Settings',
-                  () {},
-                ),
-                const SizedBox(height: 10),
-              ],
+                );
+              },
             ),
-          ),
+            _buildOptionItem(
+              Icons.analytics_rounded,
+              'View Analytics',
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AssignmentAnalyticsScreen(),
+                  ),
+                );
+              },
+            ),
+            _buildOptionItem(
+              Icons.settings_rounded,
+              'Assignment Settings',
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AssignmentSettingsScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
     );
   }
 
@@ -899,51 +937,50 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
   void _sortAssignments() {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text('Sort Assignments'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('By Due Date'),
+              onTap: () {
+                setState(() {
+                  _assignments.sort(
+                    (a, b) => a['dueDate'].compareTo(b['dueDate']),
+                  );
+                });
+                Navigator.pop(context);
+              },
             ),
-            title: const Text('Sort Assignments'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('By Due Date'),
-                  onTap: () {
-                    setState(() {
-                      _assignments.sort(
-                        (a, b) => a['dueDate'].compareTo(b['dueDate']),
-                      );
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text('By Title'),
-                  onTap: () {
-                    setState(() {
-                      _assignments.sort(
-                        (a, b) => a['title'].compareTo(b['title']),
-                      );
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text('By Status'),
-                  onTap: () {
-                    setState(() {
-                      _assignments.sort(
-                        (a, b) => a['status'].compareTo(b['status']),
-                      );
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+            ListTile(
+              title: const Text('By Title'),
+              onTap: () {
+                setState(() {
+                  _assignments.sort(
+                    (a, b) => a['title'].compareTo(b['title']),
+                  );
+                });
+                Navigator.pop(context);
+              },
             ),
-          ),
+            ListTile(
+              title: const Text('By Status'),
+              onTap: () {
+                setState(() {
+                  _assignments.sort(
+                    (a, b) => a['status'].compareTo(b['status']),
+                  );
+                });
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -957,119 +994,29 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
   }
 
   void _viewSubmissions(Map<String, dynamic> assignment) {
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Viewing submissions for ${assignment['title']}'),
-        backgroundColor: AppTheme.primaryColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AssignmentSubmissionsScreen(assignment: assignment),
       ),
     );
   }
 
   void _editAssignment(Map<String, dynamic> assignment) {
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Editing ${assignment['title']}'),
-        backgroundColor: AppTheme.teacherColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AssignmentEditScreen(assignment: assignment),
       ),
     );
   }
 
   void _createAssignment() {
-    showDialog(
-      context: context,
-      builder: (context) => _buildCreateAssignmentDialog(),
-    );
-  }
-
-  Widget _buildCreateAssignmentDialog() {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Row(
-        children: [
-          Icon(Icons.add_rounded, color: AppTheme.primaryColor),
-          const SizedBox(width: 8),
-          const Text('Create Assignment'),
-        ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AssignmentEditScreen(),
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Assignment Title',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              maxLines: 3,
-              decoration: InputDecoration(
-                labelText: 'Description',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Points',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Due Date',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Assignment created successfully!'),
-                backgroundColor: AppTheme.successColor,
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
-          ),
-          child: const Text('Create', style: TextStyle(color: Colors.white)),
-        ),
-      ],
     );
   }
 
@@ -1077,305 +1024,5 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-}
-
-// Assignment Details Screen
-class AssignmentDetailsScreen extends StatelessWidget {
-  final Map<String, dynamic> assignment;
-
-  const AssignmentDetailsScreen({Key? key, required this.assignment})
-    : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          assignment['title'],
-          style: const TextStyle(
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF2D3748),
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Color(0xFF2D3748),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_rounded, color: Color(0xFF2D3748)),
-            onPressed: () {
-              // Edit assignment
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Assignment Overview Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.primaryColor,
-                    AppTheme.primaryColor.withOpacity(0.8),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Icon(
-                          Icons.assignment_rounded,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              assignment['title'],
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              '${assignment['subject']} • ${assignment['class']}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.white70,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    assignment['description'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Assignment Stats
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'Total Students',
-                    assignment['totalStudents'].toString(),
-                    Icons.people_rounded,
-                    AppTheme.studentColor,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildStatCard(
-                    'Submitted',
-                    assignment['submitted'].toString(),
-                    Icons.assignment_turned_in_rounded,
-                    AppTheme.successColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'Graded',
-                    assignment['graded'].toString(),
-                    Icons.grade_rounded,
-                    AppTheme.warningColor,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildStatCard(
-                    'Points',
-                    assignment['points'].toString(),
-                    Icons.star_rounded,
-                    AppTheme.primaryColor,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Assignment Details
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Assignment Details',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF2D3748),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildDetailRow(
-                    'Type',
-                    assignment['type'],
-                    Icons.category_rounded,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDetailRow(
-                    'Due Date',
-                    assignment['dueDate'],
-                    Icons.calendar_today_rounded,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDetailRow(
-                    'Due Time',
-                    assignment['dueTime'],
-                    Icons.access_time_rounded,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDetailRow(
-                    'Priority',
-                    assignment['priority'],
-                    Icons.flag_rounded,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDetailRow(
-                    'Attachments',
-                    '${assignment['attachments']} files',
-                    Icons.attachment_rounded,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value, IconData icon) {
-    return Row(
-      children: [
-        Icon(icon, color: AppTheme.primaryColor, size: 24),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF2D3748),
-            ),
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.primaryColor,
-          ),
-        ),
-      ],
-    );
   }
 }

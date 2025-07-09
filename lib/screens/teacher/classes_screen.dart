@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sms/screens/teacher/class_details_screen.dart';
+import 'package:sms/screens/teacher/attendance_screen.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
 
@@ -720,13 +721,14 @@ class _ClassesScreenState extends State<ClassesScreen>
   }
 
   void _takeAttendance(Map<String, dynamic> classData) {
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Taking attendance for ${classData['subject']}'),
-        backgroundColor: AppTheme.successColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AttendanceScreen(
+          attendanceType: 'subject',
+          // subject: classData['subject'],
+          // className: classData['class'],
+        ),
       ),
     );
   }
