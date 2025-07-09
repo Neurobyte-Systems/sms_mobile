@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../utils/app_theme.dart';
-// import '../../utils/constants.dart';
+import '../../utils/constants.dart';
+import 'assignments_screen.dart';
 
 class GradesScreen extends StatefulWidget {
   const GradesScreen({Key? key}) : super(key: key);
@@ -16,112 +17,130 @@ class _GradesScreenState extends State<GradesScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  String _selectedClass = 'Class 10A - Mathematics';
-  String _selectedAssignment = 'Algebra Quiz';
+  String _selectedClass = 'Class 10A';
+  String _selectedSubject = 'Mathematics';
+  String _selectedTerm = 'Term 1';
 
-  final List<String> _classes = [
-    'Class 10A - Mathematics',
-    'Class 10B - Physics',
-    'Class 11A - Chemistry',
-    'Class 12A - Advanced Math',
-  ];
+  final List<String> _classes = ['Class 10A', 'Class 10B', 'Class 11A', 'Class 12A'];
+  final List<String> _subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English'];
+  final List<String> _terms = ['Term 1', 'Term 2', 'Term 3', 'Full Year'];
 
-  final List<String> _assignments = [
-    'Algebra Quiz',
-    'Geometry Test',
-    'Statistics Assignment',
-    'Calculus Midterm',
-  ];
-
-  final List<Map<String, dynamic>> _grades = [
+  // Comprehensive student data with continuous assessment
+  final List<Map<String, dynamic>> _students = [
     {
       'id': '1',
-      'studentName': 'John Doe',
+      'name': 'Alice Johnson',
       'rollNumber': '001',
-      'grade': 85,
-      'letterGrade': 'B+',
-      'status': 'graded',
-      'submittedDate': '2024-01-15',
-      'gradedDate': '2024-01-18',
-      'feedback':
-          'Good work on problem solving. Need to improve on showing work.',
+      'avatar': 'AJ',
+      'assessments': {
+        'quizzes': [85, 90, 78, 92], // 4 quizzes
+        'assignments': [88, 85, 90], // 3 assignments
+        'tests': [82, 89], // 2 tests
+        'projects': [95], // 1 project
+        'participation': 85,
+        'attendance': 95,
+      },
+      'weights': {
+        'quizzes': 0.20,
+        'assignments': 0.25,
+        'tests': 0.35,
+        'projects': 0.15,
+        'participation': 0.03,
+        'attendance': 0.02,
+      },
+      'trends': [75, 78, 82, 85, 87, 89], // Monthly trend
     },
     {
       'id': '2',
-      'studentName': 'Jane Smith',
+      'name': 'Bob Smith',
       'rollNumber': '002',
-      'grade': 92,
-      'letterGrade': 'A-',
-      'status': 'graded',
-      'submittedDate': '2024-01-15',
-      'gradedDate': '2024-01-18',
-      'feedback': 'Excellent understanding of concepts. Well done!',
+      'avatar': 'BS',
+      'assessments': {
+        'quizzes': [78, 82, 85, 88],
+        'assignments': [80, 78, 85],
+        'tests': [85, 82],
+        'projects': [88],
+        'participation': 82,
+        'attendance': 92,
+      },
+      'weights': {
+        'quizzes': 0.20,
+        'assignments': 0.25,
+        'tests': 0.35,
+        'projects': 0.15,
+        'participation': 0.03,
+        'attendance': 0.02,
+      },
+      'trends': [70, 75, 78, 80, 82, 84],
     },
     {
       'id': '3',
-      'studentName': 'Mike Johnson',
+      'name': 'Carol Davis',
       'rollNumber': '003',
-      'grade': 78,
-      'letterGrade': 'C+',
-      'status': 'graded',
-      'submittedDate': '2024-01-15',
-      'gradedDate': '2024-01-18',
-      'feedback': 'Needs more practice with complex problems.',
+      'avatar': 'CD',
+      'assessments': {
+        'quizzes': [92, 88, 90, 95],
+        'assignments': [90, 92, 88],
+        'tests': [88, 92],
+        'projects': [92],
+        'participation': 90,
+        'attendance': 98,
+      },
+      'weights': {
+        'quizzes': 0.20,
+        'assignments': 0.25,
+        'tests': 0.35,
+        'projects': 0.15,
+        'participation': 0.03,
+        'attendance': 0.02,
+      },
+      'trends': [85, 87, 88, 90, 91, 92],
     },
     {
       'id': '4',
-      'studentName': 'Sarah Wilson',
+      'name': 'David Wilson',
       'rollNumber': '004',
-      'grade': 0,
-      'letterGrade': '',
-      'status': 'pending',
-      'submittedDate': '2024-01-15',
-      'gradedDate': null,
-      'feedback': '',
+      'avatar': 'DW',
+      'assessments': {
+        'quizzes': [75, 78, 82, 80],
+        'assignments': [82, 80, 78],
+        'tests': [78, 82],
+        'projects': [85],
+        'participation': 78,
+        'attendance': 88,
+      },
+      'weights': {
+        'quizzes': 0.20,
+        'assignments': 0.25,
+        'tests': 0.35,
+        'projects': 0.15,
+        'participation': 0.03,
+        'attendance': 0.02,
+      },
+      'trends': [68, 70, 75, 78, 79, 80],
     },
     {
       'id': '5',
-      'studentName': 'David Brown',
+      'name': 'Eva Brown',
       'rollNumber': '005',
-      'grade': 88,
-      'letterGrade': 'B+',
-      'status': 'graded',
-      'submittedDate': '2024-01-15',
-      'gradedDate': '2024-01-18',
-      'feedback': 'Good understanding. Minor calculation errors.',
-    },
-    {
-      'id': '6',
-      'studentName': 'Emily Davis',
-      'rollNumber': '006',
-      'grade': 95,
-      'letterGrade': 'A',
-      'status': 'graded',
-      'submittedDate': '2024-01-15',
-      'gradedDate': '2024-01-18',
-      'feedback': 'Outstanding work! Perfect execution.',
-    },
-    {
-      'id': '7',
-      'studentName': 'Alex Garcia',
-      'rollNumber': '007',
-      'grade': 0,
-      'letterGrade': '',
-      'status': 'pending',
-      'submittedDate': '2024-01-15',
-      'gradedDate': null,
-      'feedback': '',
-    },
-    {
-      'id': '8',
-      'studentName': 'Lisa Martinez',
-      'rollNumber': '008',
-      'grade': 91,
-      'letterGrade': 'A-',
-      'status': 'graded',
-      'submittedDate': '2024-01-15',
-      'gradedDate': '2024-01-18',
-      'feedback': 'Very good work. Keep it up!',
+      'avatar': 'EB',
+      'assessments': {
+        'quizzes': [88, 85, 90, 92],
+        'assignments': [85, 88, 90],
+        'tests': [90, 88],
+        'projects': [90],
+        'participation': 88,
+        'attendance': 95,
+      },
+      'weights': {
+        'quizzes': 0.20,
+        'assignments': 0.25,
+        'tests': 0.35,
+        'projects': 0.15,
+        'participation': 0.03,
+        'attendance': 0.02,
+      },
+      'trends': [80, 82, 85, 87, 88, 89],
     },
   ];
 
@@ -151,14 +170,52 @@ class _GradesScreenState extends State<GradesScreen>
     _animationController.forward();
   }
 
-  int get _gradedCount => _grades.where((g) => g['status'] == 'graded').length;
-  int get _pendingCount =>
-      _grades.where((g) => g['status'] == 'pending').length;
-  double get _averageGrade {
-    final gradedGrades = _grades.where((g) => g['status'] == 'graded').toList();
-    if (gradedGrades.isEmpty) return 0;
-    return gradedGrades.map((g) => g['grade'] as int).reduce((a, b) => a + b) /
-        gradedGrades.length;
+  double _calculateCumulativeGrade(Map<String, dynamic> student) {
+    final assessments = student['assessments'] as Map<String, dynamic>;
+    final weights = student['weights'] as Map<String, dynamic>;
+    
+    double totalScore = 0.0;
+    
+    // Calculate weighted average for each assessment type
+    assessments.forEach((key, value) {
+      if (key == 'participation' || key == 'attendance') {
+        totalScore += (value as num) * (weights[key] as num);
+      } else if (value is List && value.isNotEmpty) {
+        double average = value.cast<num>().reduce((a, b) => a + b) / value.length;
+        totalScore += average * (weights[key] as num);
+      }
+    });
+    
+    return totalScore;
+  }
+
+  String _getLetterGrade(double score) {
+    if (score >= 97) return 'A+';
+    if (score >= 93) return 'A';
+    if (score >= 90) return 'A-';
+    if (score >= 87) return 'B+';
+    if (score >= 83) return 'B';
+    if (score >= 80) return 'B-';
+    if (score >= 77) return 'C+';
+    if (score >= 73) return 'C';
+    if (score >= 70) return 'C-';
+    if (score >= 67) return 'D+';
+    if (score >= 65) return 'D';
+    return 'F';
+  }
+
+  Color _getGradeColor(double score) {
+    if (score >= 90) return AppTheme.successColor;
+    if (score >= 80) return AppTheme.primaryColor;
+    if (score >= 70) return AppTheme.warningColor;
+    if (score >= 60) return Colors.orange;
+    return AppTheme.errorColor;
+  }
+
+  double get _classAverage {
+    if (_students.isEmpty) return 0.0;
+    double total = _students.map((s) => _calculateCumulativeGrade(s)).reduce((a, b) => a + b);
+    return total / _students.length;
   }
 
   @override
@@ -173,13 +230,75 @@ class _GradesScreenState extends State<GradesScreen>
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  _buildSelectors(),
-                  _buildStatsCards(),
-                  _buildActionButtons(),
-                  Expanded(child: _buildGradesList()),
+              child: CustomScrollView(
+                slivers: [
+                  // Header Section
+                  SliverToBoxAdapter(child: _buildHeader()),
+
+                  // Class Selection
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildClassSelection(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+
+                  // Overview Stats
+                  SliverToBoxAdapter(child: _buildOverviewStats()),
+
+                  // Grade Distribution Chart
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildGradeDistribution(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+
+                  // Assessment Weights
+                  SliverToBoxAdapter(child: _buildAssessmentWeights()),
+
+                  // Students List Header
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildStudentsListHeader(),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+
+                  // Students List
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return TweenAnimationBuilder<double>(
+                          duration: Duration(milliseconds: 300 + (index * 100)),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0, 20 * (1 - value)),
+                              child: Opacity(
+                                opacity: value,
+                                child: _buildStudentCard(_students[index], index),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      childCount: _students.length,
+                    ),
+                  ),
+
+                  // Bottom padding
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
                 ],
               ),
             ),
@@ -195,7 +314,7 @@ class _GradesScreenState extends State<GradesScreen>
       elevation: 0,
       backgroundColor: Colors.transparent,
       title: const Text(
-        'Grades',
+        'Continuous Assessment',
         style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF2D3748)),
       ),
       leading: IconButton(
@@ -207,11 +326,17 @@ class _GradesScreenState extends State<GradesScreen>
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.analytics_rounded, color: Color(0xFF2D3748)),
+          icon: const Icon(
+            Icons.analytics_rounded,
+            color: Color(0xFF2D3748),
+          ),
           onPressed: _showAnalytics,
         ),
         IconButton(
-          icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF2D3748)),
+          icon: const Icon(
+            Icons.more_vert_rounded,
+            color: Color(0xFF2D3748),
+          ),
           onPressed: _showMoreOptions,
         ),
       ],
@@ -220,10 +345,10 @@ class _GradesScreenState extends State<GradesScreen>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppTheme.warningColor.withOpacity(0.1), Colors.transparent],
+          colors: [AppTheme.primaryColor.withOpacity(0.1), Colors.transparent],
         ),
       ),
       child: Row(
@@ -233,15 +358,15 @@ class _GradesScreenState extends State<GradesScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Grade Management',
+                  'Continuous Assessment',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF2D3748),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
-                  'Grade assignments and provide feedback',
+                  'Cumulative grades and progress tracking',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: const Color(0xFF4A5568),
                   ),
@@ -250,15 +375,15 @@ class _GradesScreenState extends State<GradesScreen>
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.warningColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
+              color: AppTheme.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              Icons.grade_rounded,
-              color: AppTheme.warningColor,
-              size: 32,
+              Icons.assessment_rounded,
+              color: AppTheme.primaryColor,
+              size: 28,
             ),
           ),
         ],
@@ -266,80 +391,92 @@ class _GradesScreenState extends State<GradesScreen>
     );
   }
 
-  Widget _buildSelectors() {
+  Widget _buildClassSelection() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
+      child: Row(
         children: [
-          // Class Selector
-          Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: DropdownButtonFormField<String>(
-              value: _selectedClass,
-              decoration: const InputDecoration(
-                labelText: 'Select Class',
-                border: InputBorder.none,
-                prefixIcon: Icon(Icons.class_rounded),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
-              items:
-                  _classes.map((className) {
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedClass,
+                  isExpanded: true,
+                  items: _classes.map((className) {
                     return DropdownMenuItem(
                       value: className,
                       child: Text(className),
                     );
                   }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedClass = value!;
-                });
-              },
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedClass = value!;
+                    });
+                  },
+                ),
+              ),
             ),
           ),
-          // Assignment Selector
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: DropdownButtonFormField<String>(
-              value: _selectedAssignment,
-              decoration: const InputDecoration(
-                labelText: 'Select Assignment',
-                border: InputBorder.none,
-                prefixIcon: Icon(Icons.assignment_rounded),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
-              items:
-                  _assignments.map((assignment) {
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedSubject,
+                  isExpanded: true,
+                  items: _subjects.map((subject) {
                     return DropdownMenuItem(
-                      value: assignment,
-                      child: Text(assignment),
+                      value: subject,
+                      child: Text(subject),
                     );
                   }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedAssignment = value!;
-                });
-              },
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedSubject = value!;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedTerm,
+                  isExpanded: true,
+                  items: _terms.map((term) {
+                    return DropdownMenuItem(
+                      value: term,
+                      child: Text(term),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedTerm = value!;
+                    });
+                  },
+                ),
+              ),
             ),
           ),
         ],
@@ -347,44 +484,38 @@ class _GradesScreenState extends State<GradesScreen>
     );
   }
 
-  Widget _buildStatsCards() {
+  Widget _buildOverviewStats() {
     return Container(
-      margin: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
           Expanded(
             child: _buildStatCard(
-              'Graded',
-              _gradedCount.toString(),
-              Icons.check_circle_rounded,
-              AppTheme.successColor,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildStatCard(
-              'Pending',
-              _pendingCount.toString(),
-              Icons.pending_rounded,
-              AppTheme.warningColor,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildStatCard(
-              'Average',
-              '${_averageGrade.toStringAsFixed(1)}%',
+              'Class Average',
+              '${_classAverage.toStringAsFixed(1)}%',
               Icons.trending_up_rounded,
               AppTheme.primaryColor,
+              _getLetterGrade(_classAverage),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: _buildStatCard(
+              'Students',
+              '${_students.length}',
+              Icons.group_rounded,
+              AppTheme.successColor,
               'Total',
-              _grades.length.toString(),
-              Icons.people_rounded,
-              AppTheme.studentColor,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildStatCard(
+              'Assessments',
+              '${_getTotalAssessments()}',
+              Icons.assignment_rounded,
+              AppTheme.warningColor,
+              'Completed',
             ),
           ),
         ],
@@ -392,17 +523,12 @@ class _GradesScreenState extends State<GradesScreen>
     );
   }
 
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
+  Widget _buildStatCard(String title, String value, IconData icon, Color color, String subtitle) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -413,1008 +539,50 @@ class _GradesScreenState extends State<GradesScreen>
       ),
       child: Column(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
+          Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
           Text(
             value,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.w800,
               color: color,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3748),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildGradeDistribution() {
+    final gradeRanges = {
+      'A (90-100)': _students.where((s) => _calculateCumulativeGrade(s) >= 90).length,
+      'B (80-89)': _students.where((s) => _calculateCumulativeGrade(s) >= 80 && _calculateCumulativeGrade(s) < 90).length,
+      'C (70-79)': _students.where((s) => _calculateCumulativeGrade(s) >= 70 && _calculateCumulativeGrade(s) < 80).length,
+      'D (60-69)': _students.where((s) => _calculateCumulativeGrade(s) >= 60 && _calculateCumulativeGrade(s) < 70).length,
+      'F (0-59)': _students.where((s) => _calculateCumulativeGrade(s) < 60).length,
+    };
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        children: [
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: _bulkGrading,
-              icon: const Icon(Icons.auto_fix_high_rounded, size: 16),
-              label: const Text('Bulk Grade'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: OutlinedButton.icon(
-              onPressed: _exportGrades,
-              icon: const Icon(Icons.download_rounded, size: 16),
-              label: const Text('Export'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppTheme.teacherColor,
-                side: BorderSide(color: AppTheme.teacherColor),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGradesList() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Text(
-                'Student Grades',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF2D3748),
-                ),
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: _sortGrades,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.sort_rounded,
-                      size: 16,
-                      color: AppTheme.primaryColor,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Sort',
-                      style: TextStyle(color: AppTheme.primaryColor),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _grades.length,
-              itemBuilder: (context, index) {
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 300 + (index * 50)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, child) {
-                    return Transform.translate(
-                      offset: Offset(0, 20 * (1 - value)),
-                      child: Opacity(
-                        opacity: value,
-                        child: _buildGradeCard(_grades[index], index),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGradeCard(Map<String, dynamic> gradeData, int index) {
-    final status = gradeData['status'] as String;
-    final grade = gradeData['grade'] as int;
-    Color statusColor;
-    Color gradeColor;
-
-    if (status == 'pending') {
-      statusColor = AppTheme.warningColor;
-      gradeColor = Colors.grey;
-    } else {
-      statusColor = AppTheme.successColor;
-      if (grade >= 90) {
-        gradeColor = AppTheme.successColor;
-      } else if (grade >= 80) {
-        gradeColor = AppTheme.primaryColor;
-      } else if (grade >= 70) {
-        gradeColor = AppTheme.warningColor;
-      } else {
-        gradeColor = AppTheme.errorColor;
-      }
-    }
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Material(
-        elevation: 2,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: () => _editGrade(gradeData),
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.white,
-              border: Border.all(
-                color: statusColor.withOpacity(0.2),
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    // Student Avatar
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          gradeData['studentName']
-                              .split(' ')
-                              .map((n) => n[0])
-                              .join(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: statusColor,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 16),
-
-                    // Student Info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            gradeData['studentName'],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF2D3748),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Roll No: ${gradeData['rollNumber']}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Grade Display
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (status == 'graded') ...[
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  gradeColor,
-                                  gradeColor.withOpacity(0.8),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '${gradeData['grade']}',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    gradeData['letterGrade'],
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ] else ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppTheme.warningColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'PENDING',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.warningColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-
-                if (status == 'graded' && gradeData['feedback'].isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.feedback_rounded,
-                          size: 16,
-                          color: Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            gradeData['feedback'],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-
-                const SizedBox(height: 12),
-
-                // Action Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _editGrade(gradeData),
-                        icon: Icon(
-                          status == 'graded'
-                              ? Icons.edit_rounded
-                              : Icons.grade_rounded,
-                          size: 16,
-                        ),
-                        label: Text(status == 'graded' ? 'Edit' : 'Grade'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: gradeColor,
-                          side: BorderSide(color: gradeColor),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => _sendFeedback(gradeData),
-                        icon: const Icon(Icons.send_rounded, size: 16),
-                        label: const Text('Send'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton.extended(
-      onPressed: _createRubric,
-      backgroundColor: AppTheme.teacherColor,
-      icon: const Icon(Icons.rule_rounded, color: Colors.white),
-      label: const Text(
-        'Create Rubric',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-      ),
-    );
-  }
-
-  // Action Methods
-  void _editGrade(Map<String, dynamic> gradeData) {
-    showDialog(
-      context: context,
-      builder: (context) => _buildGradeDialog(gradeData),
-    );
-  }
-
-  Widget _buildGradeDialog(Map<String, dynamic> gradeData) {
-    final TextEditingController gradeController = TextEditingController(
-      text:
-          gradeData['status'] == 'graded' ? gradeData['grade'].toString() : '',
-    );
-    final TextEditingController feedbackController = TextEditingController(
-      text: gradeData['feedback'],
-    );
-
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Row(
-        children: [
-          Icon(Icons.grade_rounded, color: AppTheme.warningColor),
-          const SizedBox(width: 8),
-          Text('Grade ${gradeData['studentName']}'),
-        ],
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: gradeController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Grade (0-100)',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                prefixIcon: const Icon(Icons.grade_rounded),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: feedbackController,
-              maxLines: 4,
-              decoration: InputDecoration(
-                labelText: 'Feedback',
-                hintText: 'Enter your feedback for the student...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                prefixIcon: const Icon(Icons.feedback_rounded),
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            final grade = int.tryParse(gradeController.text) ?? 0;
-            setState(() {
-              gradeData['grade'] = grade;
-              gradeData['letterGrade'] = _getLetterGrade(grade);
-              gradeData['status'] = 'graded';
-              gradeData['feedback'] = feedbackController.text;
-              gradeData['gradedDate'] = DateTime.now().toString().split(' ')[0];
-            });
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Grade saved for ${gradeData['studentName']}'),
-                backgroundColor: AppTheme.successColor,
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.warningColor,
-          ),
-          child: const Text(
-            'Save Grade',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _getLetterGrade(int grade) {
-    if (grade >= 97) return 'A+';
-    if (grade >= 93) return 'A';
-    if (grade >= 90) return 'A-';
-    if (grade >= 87) return 'B+';
-    if (grade >= 83) return 'B';
-    if (grade >= 80) return 'B-';
-    if (grade >= 77) return 'C+';
-    if (grade >= 73) return 'C';
-    if (grade >= 70) return 'C-';
-    if (grade >= 67) return 'D+';
-    if (grade >= 65) return 'D';
-    return 'F';
-  }
-
-  void _sendFeedback(Map<String, dynamic> gradeData) {
-    if (gradeData['status'] != 'graded') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please grade the assignment first'),
-          backgroundColor: AppTheme.warningColor,
-        ),
-      );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.send_rounded, color: AppTheme.primaryColor),
-                const SizedBox(width: 8),
-                const Text('Send Grade'),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Send grade to ${gradeData['studentName']} and parent?'),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Grade: ${gradeData['grade']} (${gradeData['letterGrade']})',
-                      ),
-                      if (gradeData['feedback'].isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Text('Feedback: ${gradeData['feedback']}'),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Grade sent to ${gradeData['studentName']}',
-                      ),
-                      backgroundColor: AppTheme.successColor,
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                ),
-                child: const Text(
-                  'Send',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-    );
-  }
-
-  void _bulkGrading() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.auto_fix_high_rounded, color: AppTheme.primaryColor),
-                const SizedBox(width: 8),
-                const Text('Bulk Grading'),
-              ],
-            ),
-            content: const Text(
-              'Apply the same grade to multiple students at once.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  // Implement bulk grading functionality
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                ),
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-    );
-  }
-
-  void _exportGrades() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder:
-          (context) => Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Export Grades',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 20),
-                _buildExportOption(
-                  Icons.table_chart_rounded,
-                  'Export as Excel',
-                  () {},
-                ),
-                _buildExportOption(
-                  Icons.picture_as_pdf_rounded,
-                  'Export as PDF',
-                  () {},
-                ),
-                _buildExportOption(Icons.share_rounded, 'Share Report', () {}),
-                const SizedBox(height: 10),
-              ],
-            ),
-          ),
-    );
-  }
-
-  Widget _buildExportOption(IconData icon, String title, VoidCallback onTap) {
-    return ListTile(
-      leading: Icon(icon, color: AppTheme.teacherColor),
-      title: Text(title),
-      onTap: () {
-        Navigator.pop(context);
-        onTap();
-      },
-    );
-  }
-
-  void _showAnalytics() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GradeAnalyticsScreen(grades: _grades),
-      ),
-    );
-  }
-
-  void _showMoreOptions() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder:
-          (context) => Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _buildOptionItem(Icons.history_rounded, 'Grade History', () {}),
-                _buildOptionItem(
-                  Icons.settings_rounded,
-                  'Grading Settings',
-                  () {},
-                ),
-                _buildOptionItem(Icons.backup_rounded, 'Backup Grades', () {}),
-                const SizedBox(height: 10),
-              ],
-            ),
-          ),
-    );
-  }
-
-  Widget _buildOptionItem(IconData icon, String title, VoidCallback onTap) {
-    return ListTile(
-      leading: Icon(icon, color: AppTheme.teacherColor),
-      title: Text(title),
-      onTap: () {
-        Navigator.pop(context);
-        onTap();
-      },
-    );
-  }
-
-  void _sortGrades() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Text('Sort Grades'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('By Name'),
-                  onTap: () {
-                    setState(() {
-                      _grades.sort(
-                        (a, b) => a['studentName'].compareTo(b['studentName']),
-                      );
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text('By Grade (High to Low)'),
-                  onTap: () {
-                    setState(() {
-                      _grades.sort((a, b) => b['grade'].compareTo(a['grade']));
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text('By Status'),
-                  onTap: () {
-                    setState(() {
-                      _grades.sort(
-                        (a, b) => a['status'].compareTo(b['status']),
-                      );
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-    );
-  }
-
-  void _createRubric() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.rule_rounded, color: AppTheme.teacherColor),
-                const SizedBox(width: 8),
-                const Text('Create Rubric'),
-              ],
-            ),
-            content: const Text(
-              'Create a grading rubric for this assignment to ensure consistent grading.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  // Navigate to rubric creation screen
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.teacherColor,
-                ),
-                child: const Text(
-                  'Create',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-}
-
-// Grade Analytics Screen
-class GradeAnalyticsScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> grades;
-
-  const GradeAnalyticsScreen({Key? key, required this.grades})
-    : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final gradedGrades = grades.where((g) => g['status'] == 'graded').toList();
-    final averageGrade =
-        gradedGrades.isEmpty
-            ? 0.0
-            : gradedGrades
-                    .map((g) => g['grade'] as int)
-                    .reduce((a, b) => a + b) /
-                gradedGrades.length;
-
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        title: const Text(
-          'Grade Analytics',
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF2D3748),
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Color(0xFF2D3748),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Overview Cards
-            Row(
-              children: [
-                Expanded(
-                  child: _buildAnalyticsCard(
-                    'Average Grade',
-                    '${averageGrade.toStringAsFixed(1)}%',
-                    Icons.trending_up_rounded,
-                    AppTheme.primaryColor,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildAnalyticsCard(
-                    'Highest Grade',
-                    gradedGrades.isEmpty
-                        ? '0%'
-                        : '${gradedGrades.map((g) => g['grade'] as int).reduce((a, b) => a > b ? a : b)}%',
-                    Icons.star_rounded,
-                    AppTheme.successColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildAnalyticsCard(
-                    'Lowest Grade',
-                    gradedGrades.isEmpty
-                        ? '0%'
-                        : '${gradedGrades.map((g) => g['grade'] as int).reduce((a, b) => a < b ? a : b)}%',
-                    Icons.trending_down_rounded,
-                    AppTheme.errorColor,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildAnalyticsCard(
-                    'Pass Rate',
-                    gradedGrades.isEmpty
-                        ? '0%'
-                        : '${(gradedGrades.where((g) => g['grade'] >= 70).length / gradedGrades.length * 100).toStringAsFixed(1)}%',
-                    Icons.check_circle_rounded,
-                    AppTheme.warningColor,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 32),
-
-            // Grade Distribution
-            const Text(
-              'Grade Distribution',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF2D3748),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  _buildGradeDistributionBar(
-                    'A (90-100)',
-                    gradedGrades.where((g) => g['grade'] >= 90).length,
-                    gradedGrades.length,
-                    AppTheme.successColor,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildGradeDistributionBar(
-                    'B (80-89)',
-                    gradedGrades
-                        .where((g) => g['grade'] >= 80 && g['grade'] < 90)
-                        .length,
-                    gradedGrades.length,
-                    AppTheme.primaryColor,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildGradeDistributionBar(
-                    'C (70-79)',
-                    gradedGrades
-                        .where((g) => g['grade'] >= 70 && g['grade'] < 80)
-                        .length,
-                    gradedGrades.length,
-                    AppTheme.warningColor,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildGradeDistributionBar(
-                    'D (60-69)',
-                    gradedGrades
-                        .where((g) => g['grade'] >= 60 && g['grade'] < 70)
-                        .length,
-                    gradedGrades.length,
-                    AppTheme.errorColor,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildGradeDistributionBar(
-                    'F (0-59)',
-                    gradedGrades.where((g) => g['grade'] < 60).length,
-                    gradedGrades.length,
-                    Colors.red.shade700,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAnalyticsCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1423,91 +591,641 @@ class GradeAnalyticsScreen extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: const Offset(0, 5),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+          const Text(
+            'Grade Distribution',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF2D3748),
             ),
-            child: Icon(icon, color: color, size: 24),
           ),
           const SizedBox(height: 16),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-          ),
+          ...gradeRanges.entries.map((entry) {
+            final percentage = _students.isEmpty ? 0.0 : entry.value / _students.length;
+            return _buildDistributionItem(entry.key, entry.value, percentage);
+          }).toList(),
         ],
       ),
     );
   }
 
-  Widget _buildGradeDistributionBar(
-    String grade,
-    int count,
-    int total,
-    Color color,
-  ) {
-    final percentage = total == 0 ? 0.0 : count / total;
-
-    return Row(
-      children: [
-        SizedBox(
-          width: 80,
-          child: Text(
-            grade,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            height: 24,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(12),
+  Widget _buildDistributionItem(String grade, int count, double percentage) {
+    final color = _getGradeColor(grade.contains('A') ? 95 : 
+                                grade.contains('B') ? 85 : 
+                                grade.contains('C') ? 75 : 
+                                grade.contains('D') ? 65 : 55);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              grade,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2D3748),
+              ),
             ),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: percentage,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(12),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              height: 8,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: percentage,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        SizedBox(
-          width: 40,
-          child: Text(
+          const SizedBox(width: 12),
+          Text(
             '$count',
-            textAlign: TextAlign.right,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: color,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  Widget _buildAssessmentWeights() {
+    final weights = _students.isNotEmpty ? _students.first['weights'] as Map<String, dynamic> : {};
+    
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Assessment Weights',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF2D3748),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: weights.entries.map((entry) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _getAssessmentIcon(entry.key),
+                      size: 16,
+                      color: AppTheme.primaryColor,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${entry.key.toUpperCase()}: ${(entry.value * 100).toInt()}%',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStudentsListHeader() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        children: [
+          const Text(
+            'Student Performance',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF2D3748),
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            icon: const Icon(Icons.sort_rounded),
+            onPressed: _showSortOptions,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStudentCard(Map<String, dynamic> student, int index) {
+    final cumulativeGrade = _calculateCumulativeGrade(student);
+    final letterGrade = _getLetterGrade(cumulativeGrade);
+    final gradeColor = _getGradeColor(cumulativeGrade);
+    final assessments = student['assessments'] as Map<String, dynamic>;
+    final trends = student['trends'] as List<dynamic>;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+      child: Material(
+        elevation: 2,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: () => _showStudentDetails(student),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Student Header
+                Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: gradeColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          student['avatar'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: gradeColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            student['name'],
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF2D3748),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Roll No: ${student['rollNumber']}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: gradeColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            letterGrade,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: gradeColor,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${cumulativeGrade.toStringAsFixed(1)}%',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: gradeColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Assessment Breakdown
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildAssessmentChip(
+                        'Quizzes',
+                        _calculateAverage(assessments['quizzes']),
+                        Icons.quiz_rounded,
+                        AppTheme.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildAssessmentChip(
+                        'Tests',
+                        _calculateAverage(assessments['tests']),
+                        Icons.assignment_rounded,
+                        AppTheme.warningColor,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildAssessmentChip(
+                        'Projects',
+                        _calculateAverage(assessments['projects']),
+                        Icons.folder_special_rounded,
+                        AppTheme.successColor,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Progress Trend
+                Row(
+                  children: [
+                    Icon(
+                      Icons.trending_up_rounded,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Progress Trend:',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2D3748),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Container(
+                        height: 30,
+                        child: Row(
+                          children: trends.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final value = entry.value as num;
+                            final height = (value / 100) * 20;
+                            return Expanded(
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 1),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      height: height,
+                                      decoration: BoxDecoration(
+                                        color: index == trends.length - 1 
+                                            ? gradeColor 
+                                            : gradeColor.withOpacity(0.6),
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _getTrendDirection(trends),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: _getTrendColor(trends),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // Action Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _showStudentDetails(student),
+                        icon: const Icon(Icons.visibility_rounded, size: 16),
+                        label: const Text('View Details'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.primaryColor,
+                          side: BorderSide(color: AppTheme.primaryColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _addAssessment(student),
+                        icon: const Icon(Icons.add_rounded, size: 16),
+                        label: const Text('Add Grade'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.successColor,
+                          side: BorderSide(color: AppTheme.successColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssessmentChip(String title, double average, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+          Text(
+            '${average.toStringAsFixed(0)}%',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFloatingActionButton() {
+    return FloatingActionButton.extended(
+      onPressed: _addNewAssessment,
+      backgroundColor: AppTheme.primaryColor,
+      icon: const Icon(Icons.add_rounded, color: Colors.white),
+      label: const Text(
+        'New Assessment',
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  // Helper Methods
+  double _calculateAverage(dynamic scores) {
+    if (scores is List && scores.isNotEmpty) {
+      return scores.cast<num>().reduce((a, b) => a + b) / scores.length;
+    }
+    return 0.0;
+  }
+
+  int _getTotalAssessments() {
+    if (_students.isEmpty) return 0;
+    final assessments = _students.first['assessments'] as Map<String, dynamic>;
+    int total = 0;
+    assessments.forEach((key, value) {
+      if (value is List) {
+        total += value.length;
+      } else if (key == 'participation' || key == 'attendance') {
+        total += 1;
+      }
+    });
+    return total;
+  }
+
+  IconData _getAssessmentIcon(String assessment) {
+    switch (assessment) {
+      case 'quizzes':
+        return Icons.quiz_rounded;
+      case 'assignments':
+        return Icons.assignment_rounded;
+      case 'tests':
+        return Icons.assignment_turned_in_rounded;
+      case 'projects':
+        return Icons.folder_special_rounded;
+      case 'participation':
+        return Icons.record_voice_over_rounded;
+      case 'attendance':
+        return Icons.event_available_rounded;
+      default:
+        return Icons.assessment_rounded;
+    }
+  }
+
+  String _getTrendDirection(List<dynamic> trends) {
+    if (trends.length < 2) return 'N/A';
+    final first = trends.first as num;
+    final last = trends.last as num;
+    final diff = last - first;
+    if (diff > 5) return '↗ Rising';
+    if (diff < -5) return '↘ Falling';
+    return '→ Stable';
+  }
+
+  Color _getTrendColor(List<dynamic> trends) {
+    if (trends.length < 2) return Colors.grey;
+    final first = trends.first as num;
+    final last = trends.last as num;
+    final diff = last - first;
+    if (diff > 5) return AppTheme.successColor;
+    if (diff < -5) return AppTheme.errorColor;
+    return AppTheme.warningColor;
+  }
+
+  // Action Methods
+  void _showStudentDetails(Map<String, dynamic> student) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        builder: (context, scrollController) {
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  '${student['name']} - Detailed Report',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Detailed assessment breakdown would go here
+                        const Text(
+                          'Assessment Breakdown',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF2D3748),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Add detailed breakdown here
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _addAssessment(Map<String, dynamic> student) {
+    // Add assessment logic
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Add assessment for ${student['name']}'),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+
+  void _addNewAssessment() {
+    // Add new assessment logic
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Create new assessment'),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+
+  void _showAnalytics() {
+    // Show analytics
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Analytics view'),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+
+  void _showMoreOptions() {
+    // Show more options
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('More options'),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+
+  void _showSortOptions() {
+    // Show sort options
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Sort options'),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }
