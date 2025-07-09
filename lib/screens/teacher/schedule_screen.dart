@@ -889,6 +889,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
+      heroTag: "schedule_fab",
       onPressed: _addNewClass,
       backgroundColor: AppTheme.primaryColor,
       icon: const Icon(Icons.add_rounded, color: Colors.white),

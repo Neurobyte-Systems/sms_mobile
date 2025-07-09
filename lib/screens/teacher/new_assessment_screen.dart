@@ -676,12 +676,12 @@ class _NewAssessmentScreenState extends State<NewAssessmentScreen>
                     onChanged: (value) => setState(() => _timeLimit = value.toInt()),
                   ),
                 ),
-                Container(
-                  width: 60,
+                SizedBox(
+                  width: 50,
                   child: Text(
                     '$_timeLimit min',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF2D3748),
                     ),
@@ -809,9 +809,15 @@ class _NewAssessmentScreenState extends State<NewAssessmentScreen>
                   value: item,
                   child: Row(
                     children: [
-                      Icon(icon, color: AppTheme.primaryColor, size: 20),
-                      const SizedBox(width: 12),
-                      Text(item),
+                      Icon(icon, color: AppTheme.primaryColor, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          item,
+                          style: const TextStyle(fontSize: 14),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 );

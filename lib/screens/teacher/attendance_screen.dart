@@ -875,6 +875,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
+      heroTag: "attendance_fab",
       onPressed: _sendNotifications,
       backgroundColor: AppTheme.primaryColor,
       icon: const Icon(Icons.notifications_rounded, color: Colors.white),

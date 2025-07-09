@@ -774,6 +774,7 @@ class _AssignmentSubmissionsScreenState extends State<AssignmentSubmissionsScree
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
+      heroTag: "assignment_submissions_fab",
       onPressed: _gradeAllSubmissions,
       backgroundColor: AppTheme.primaryColor,
       icon: const Icon(Icons.grade_rounded, color: Colors.white),

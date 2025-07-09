@@ -1085,6 +1085,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         return Transform.scale(
           scale: 1.0 + (_fabController.value * 0.1),
           child: FloatingActionButton.extended(
+            heroTag: "profile_fab",
             onPressed: _onFabPressed,
             backgroundColor: AppTheme.teacherColor,
             icon: const Icon(Icons.share_rounded, color: Colors.white),

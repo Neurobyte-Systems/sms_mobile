@@ -615,6 +615,7 @@ class _ClassesScreenState extends State<ClassesScreen>
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
+      heroTag: "classes_fab",
       onPressed: _addClass,
       backgroundColor: AppTheme.teacherColor,
       icon: const Icon(Icons.add_rounded, color: Colors.white),

@@ -922,6 +922,7 @@ class _NotesScreenState extends State<NotesScreen>
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
+      heroTag: "notes_fab",
       onPressed: _createNewNote,
       backgroundColor: AppTheme.warningColor,
       icon: const Icon(Icons.add_rounded, color: Colors.white),

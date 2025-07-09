@@ -1325,6 +1325,7 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen>
     ];
 
     return FloatingActionButton.extended(
+      heroTag: "class_details_fab",
       onPressed: () => _showQuickActions(actions),
       backgroundColor: AppTheme.primaryColor,
       icon: const Icon(Icons.add_rounded, color: Colors.white),

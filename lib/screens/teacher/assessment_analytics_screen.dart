@@ -28,7 +28,7 @@ class _AssessmentAnalyticsScreenState extends State<AssessmentAnalyticsScreen>
   late Animation<Offset> _slideAnimation;
   
   String _selectedPeriod = 'This Term';
-  String _selectedMetric = 'Overall Performance';
+  String _selectedMetric = 'Overall';
 
   @override
   void initState() {
@@ -335,18 +335,26 @@ class _AssessmentAnalyticsScreenState extends State<AssessmentAnalyticsScreen>
             ),
           ),
           const SizedBox(height: 20),
-          _buildFilterDropdown(
-            'Period',
-            _selectedPeriod,
-            ['This Term', 'Last Term', 'This Year', 'Last Year'],
-            (value) => setState(() => _selectedPeriod = value!),
-          ),
-          const SizedBox(height: 16),
-          _buildFilterDropdown(
-            'Metric',
-            _selectedMetric,
-            ['Overall Performance', 'Individual Assessments', 'Participation', 'Attendance'],
-            (value) => setState(() => _selectedMetric = value!),
+          Row(
+            children: [
+              Expanded(
+                child: _buildFilterDropdown(
+                  'Period',
+                  _selectedPeriod,
+                  ['This Term', 'Last Term', 'This Year', 'Last Year'],
+                  (value) => setState(() => _selectedPeriod = value!),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildFilterDropdown(
+                  'Metric',
+                  _selectedMetric,
+                  ['Overall', 'Assessments', 'Participation', 'Attendance'],
+                  (value) => setState(() => _selectedMetric = value!),
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -816,6 +816,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen>
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
+      heroTag: "assignments_fab",
       onPressed: _createAssignment,
       backgroundColor: AppTheme.primaryColor,
       icon: const Icon(Icons.add_rounded, color: Colors.white),

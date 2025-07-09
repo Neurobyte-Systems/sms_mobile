@@ -345,19 +345,24 @@ class _HelpSupportScreenState extends State<HelpSupportScreen>
             Text(
               option['title'] as String,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: isAvailable ? const Color(0xFF2D3748) : Colors.grey,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
             Text(
               option['subtitle'] as String,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 color: isAvailable ? Colors.grey.shade600 : Colors.grey,
               ),
               textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             if (!isAvailable) ...[
               const SizedBox(height: 4),

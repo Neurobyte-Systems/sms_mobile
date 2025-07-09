@@ -682,42 +682,42 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen>
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 70,
+            height: 60,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: trends.asMap().entries.map((entry) {
                 final index = entry.key;
                 final value = entry.value as num;
-                final height = (value / 100) * 50;
+                final height = (value / 100) * 40;
                 final isLast = index == trends.length - 1;
                 
                 return Expanded(
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    margin: const EdgeInsets.symmetric(horizontal: 1),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Text(
                           '${value.toInt()}%',
                           style: TextStyle(
-                            fontSize: 9,
+                            fontSize: 8,
                             fontWeight: FontWeight.w600,
                             color: isLast ? gradeColor : Colors.grey.shade600,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 1),
                         Container(
                           height: height,
                           decoration: BoxDecoration(
                             color: isLast ? gradeColor : gradeColor.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           'M${index + 1}',
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 8,
                             color: Colors.grey.shade600,
                           ),
                         ),
@@ -788,7 +788,7 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen>
     final contribution = scoreValue * weight;
     
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: [
           Expanded(
@@ -796,7 +796,7 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen>
             child: Text(
               title,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF2D3748),
               ),
@@ -809,7 +809,7 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen>
               '${scoreValue.toStringAsFixed(1)}%',
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 color: Color(0xFF4A5568),
               ),
             ),
@@ -819,17 +819,17 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen>
               '×${(weight * 100).toInt()}%',
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 11,
                 color: Color(0xFF4A5568),
               ),
             ),
           ),
           Expanded(
             child: Text(
-              '${contribution.toStringAsFixed(2)}',
+              '${contribution.toStringAsFixed(1)}',
               textAlign: TextAlign.right,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF2D3748),
               ),
