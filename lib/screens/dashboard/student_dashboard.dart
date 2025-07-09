@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
+import '../student/assignments_screen.dart';
+import '../student/grades_screen.dart';
+import '../student/schedule_screen.dart';
+import '../student/profile_screen.dart';
 
 class StudentDashboard extends StatefulWidget {
   const StudentDashboard({Key? key}) : super(key: key);
@@ -1518,173 +1522,21 @@ class _StudentDashboardState extends State<StudentDashboard>
     );
   }
 
-  // Placeholder methods for other tabs
+  // Student screen implementations
   Widget _buildAssignmentsTab() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.studentColor.withOpacity(0.1),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.assignment_rounded,
-              size: 80,
-              color: AppTheme.studentColor,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Assignments',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.studentColor,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const StudentAssignmentsScreen();
   }
 
   Widget _buildGradesTab() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.warningColor.withOpacity(0.1),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.grade_rounded,
-              size: 80,
-              color: AppTheme.warningColor,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Grades Overview',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.warningColor,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const StudentGradesScreen();
   }
 
   Widget _buildScheduleTab() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.primaryColor.withOpacity(0.1),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.schedule_rounded,
-              size: 80,
-              color: AppTheme.primaryColor,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Class Schedule',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.primaryColor,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const StudentScheduleScreen();
   }
 
   Widget _buildProfileTab() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.studentColor.withOpacity(0.1),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.person_rounded,
-              size: 80,
-              color: AppTheme.studentColor,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Student Profile',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.studentColor,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming Soon!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const StudentProfileScreen();
   }
 
   @override
