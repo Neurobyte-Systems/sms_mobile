@@ -25,124 +25,296 @@ class _GradesScreenState extends State<GradesScreen>
   final List<String> _subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English'];
   final List<String> _terms = ['Term 1', 'Term 2', 'Term 3', 'Full Year'];
 
-  // Comprehensive student data with continuous assessment
-  final List<Map<String, dynamic>> _students = [
-    {
-      'id': '1',
-      'name': 'Alice Johnson',
-      'rollNumber': '001',
-      'avatar': 'AJ',
-      'assessments': {
-        'quizzes': [85, 90, 78, 92], // 4 quizzes
-        'assignments': [88, 85, 90], // 3 assignments
-        'tests': [82, 89], // 2 tests
-        'projects': [95], // 1 project
-        'participation': 85,
-        'attendance': 95,
+  // Class-specific data
+  final Map<String, List<Map<String, dynamic>>> _classData = {
+    'Class 10A': [
+      {
+        'id': '1',
+        'name': 'Alice Johnson',
+        'rollNumber': '001',
+        'avatar': 'AJ',
+        'assessments': {
+          'quizzes': [85, 90, 78, 92],
+          'assignments': [88, 85, 90],
+          'tests': [82, 89],
+          'projects': [95],
+          'participation': 85,
+          'attendance': 95,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [75, 78, 82, 85, 87, 89],
       },
-      'weights': {
-        'quizzes': 0.20,
-        'assignments': 0.25,
-        'tests': 0.35,
-        'projects': 0.15,
-        'participation': 0.03,
-        'attendance': 0.02,
+      {
+        'id': '2',
+        'name': 'Bob Smith',
+        'rollNumber': '002',
+        'avatar': 'BS',
+        'assessments': {
+          'quizzes': [78, 82, 85, 88],
+          'assignments': [80, 78, 85],
+          'tests': [85, 82],
+          'projects': [88],
+          'participation': 82,
+          'attendance': 92,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [70, 75, 78, 80, 82, 84],
       },
-      'trends': [75, 78, 82, 85, 87, 89], // Monthly trend
-    },
-    {
-      'id': '2',
-      'name': 'Bob Smith',
-      'rollNumber': '002',
-      'avatar': 'BS',
-      'assessments': {
-        'quizzes': [78, 82, 85, 88],
-        'assignments': [80, 78, 85],
-        'tests': [85, 82],
-        'projects': [88],
-        'participation': 82,
-        'attendance': 92,
+    ],
+    'Class 10B': [
+      {
+        'id': '3',
+        'name': 'Carol Davis',
+        'rollNumber': '003',
+        'avatar': 'CD',
+        'assessments': {
+          'quizzes': [92, 88, 90, 95],
+          'assignments': [90, 92, 88],
+          'tests': [88, 92],
+          'projects': [92],
+          'participation': 90,
+          'attendance': 98,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [85, 87, 88, 90, 91, 92],
       },
-      'weights': {
-        'quizzes': 0.20,
-        'assignments': 0.25,
-        'tests': 0.35,
-        'projects': 0.15,
-        'participation': 0.03,
-        'attendance': 0.02,
+      {
+        'id': '4',
+        'name': 'David Wilson',
+        'rollNumber': '004',
+        'avatar': 'DW',
+        'assessments': {
+          'quizzes': [75, 78, 82, 80],
+          'assignments': [82, 80, 78],
+          'tests': [78, 82],
+          'projects': [85],
+          'participation': 78,
+          'attendance': 88,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [68, 70, 75, 78, 79, 80],
       },
-      'trends': [70, 75, 78, 80, 82, 84],
-    },
-    {
-      'id': '3',
-      'name': 'Carol Davis',
-      'rollNumber': '003',
-      'avatar': 'CD',
-      'assessments': {
-        'quizzes': [92, 88, 90, 95],
-        'assignments': [90, 92, 88],
-        'tests': [88, 92],
-        'projects': [92],
-        'participation': 90,
-        'attendance': 98,
+      {
+        'id': '5',
+        'name': 'Emma Johnson',
+        'rollNumber': '005',
+        'avatar': 'EJ',
+        'assessments': {
+          'quizzes': [86, 89, 84, 91],
+          'assignments': [87, 85, 89],
+          'tests': [85, 88],
+          'projects': [90],
+          'participation': 87,
+          'attendance': 94,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [81, 83, 85, 86, 87, 88],
       },
-      'weights': {
-        'quizzes': 0.20,
-        'assignments': 0.25,
-        'tests': 0.35,
-        'projects': 0.15,
-        'participation': 0.03,
-        'attendance': 0.02,
+    ],
+    'Class 11A': [
+      {
+        'id': '5',
+        'name': 'Eva Brown',
+        'rollNumber': '005',
+        'avatar': 'EB',
+        'assessments': {
+          'quizzes': [88, 85, 90, 92],
+          'assignments': [85, 88, 90],
+          'tests': [90, 88],
+          'projects': [90],
+          'participation': 88,
+          'attendance': 95,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [80, 82, 85, 87, 88, 89],
       },
-      'trends': [85, 87, 88, 90, 91, 92],
-    },
-    {
-      'id': '4',
-      'name': 'David Wilson',
-      'rollNumber': '004',
-      'avatar': 'DW',
-      'assessments': {
-        'quizzes': [75, 78, 82, 80],
-        'assignments': [82, 80, 78],
-        'tests': [78, 82],
-        'projects': [85],
-        'participation': 78,
-        'attendance': 88,
+      {
+        'id': '6',
+        'name': 'Grace Wilson',
+        'rollNumber': '006',
+        'avatar': 'GW',
+        'assessments': {
+          'quizzes': [92, 89, 94, 90],
+          'assignments': [91, 88, 93],
+          'tests': [89, 92],
+          'projects': [94],
+          'participation': 91,
+          'attendance': 97,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [83, 85, 88, 90, 91, 92],
       },
-      'weights': {
-        'quizzes': 0.20,
-        'assignments': 0.25,
-        'tests': 0.35,
-        'projects': 0.15,
-        'participation': 0.03,
-        'attendance': 0.02,
+      {
+        'id': '7',
+        'name': 'Henry Clark',
+        'rollNumber': '007',
+        'avatar': 'HC',
+        'assessments': {
+          'quizzes': [76, 82, 79, 85],
+          'assignments': [78, 82, 80],
+          'tests': [80, 84],
+          'projects': [82],
+          'participation': 79,
+          'attendance': 89,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [72, 75, 78, 80, 81, 82],
       },
-      'trends': [68, 70, 75, 78, 79, 80],
-    },
-    {
-      'id': '5',
-      'name': 'Eva Brown',
-      'rollNumber': '005',
-      'avatar': 'EB',
-      'assessments': {
-        'quizzes': [88, 85, 90, 92],
-        'assignments': [85, 88, 90],
-        'tests': [90, 88],
-        'projects': [90],
-        'participation': 88,
-        'attendance': 95,
+    ],
+    'Class 12A': [
+      {
+        'id': '8',
+        'name': 'Frank Miller',
+        'rollNumber': '008',
+        'avatar': 'FM',
+        'assessments': {
+          'quizzes': [95, 92, 88, 94],
+          'assignments': [92, 95, 90],
+          'tests': [90, 94],
+          'projects': [95],
+          'participation': 92,
+          'attendance': 98,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [88, 90, 91, 92, 93, 94],
       },
-      'weights': {
-        'quizzes': 0.20,
-        'assignments': 0.25,
-        'tests': 0.35,
-        'projects': 0.15,
-        'participation': 0.03,
-        'attendance': 0.02,
+      {
+        'id': '9',
+        'name': 'Isabella Martinez',
+        'rollNumber': '009',
+        'avatar': 'IM',
+        'assessments': {
+          'quizzes': [89, 91, 87, 93],
+          'assignments': [88, 90, 92],
+          'tests': [87, 91],
+          'projects': [89],
+          'participation': 90,
+          'attendance': 96,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [82, 84, 86, 88, 89, 90],
       },
-      'trends': [80, 82, 85, 87, 88, 89],
-    },
-  ];
+      {
+        'id': '10',
+        'name': 'Jack Thompson',
+        'rollNumber': '010',
+        'avatar': 'JT',
+        'assessments': {
+          'quizzes': [84, 87, 82, 89],
+          'assignments': [85, 83, 88],
+          'tests': [83, 87],
+          'projects': [86],
+          'participation': 85,
+          'attendance': 93,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [78, 80, 82, 84, 85, 86],
+      },
+      {
+        'id': '11',
+        'name': 'Katherine Lee',
+        'rollNumber': '011',
+        'avatar': 'KL',
+        'assessments': {
+          'quizzes': [97, 94, 96, 98],
+          'assignments': [95, 97, 94],
+          'tests': [94, 96],
+          'projects': [97],
+          'participation': 96,
+          'attendance': 99,
+        },
+        'weights': {
+          'quizzes': 0.20,
+          'assignments': 0.25,
+          'tests': 0.35,
+          'projects': 0.15,
+          'participation': 0.03,
+          'attendance': 0.02,
+        },
+        'trends': [92, 93, 94, 95, 96, 97],
+      },
+    ],
+  };
+
+  // Get current class students
+  List<Map<String, dynamic>> get _students => _classData[_selectedClass] ?? [];
 
   @override
   void initState() {
@@ -214,7 +386,8 @@ class _GradesScreenState extends State<GradesScreen>
 
   double get _classAverage {
     if (_students.isEmpty) return 0.0;
-    double total = _students.map((s) => _calculateCumulativeGrade(s)).reduce((a, b) => a + b);
+    final grades = _students.map((s) => _calculateCumulativeGrade(s)).toList();
+    double total = grades.reduce((a, b) => a + b);
     return total / _students.length;
   }
 
@@ -324,22 +497,36 @@ class _GradesScreenState extends State<GradesScreen>
         ),
         onPressed: () => Navigator.pop(context),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.analytics_rounded,
-            color: Color(0xFF2D3748),
+              actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.print_rounded,
+              color: Color(0xFF2D3748),
+            ),
+            onPressed: _printClassReport,
           ),
-          onPressed: _showAnalytics,
-        ),
-        IconButton(
-          icon: const Icon(
-            Icons.more_vert_rounded,
-            color: Color(0xFF2D3748),
+          IconButton(
+            icon: const Icon(
+              Icons.download_rounded,
+              color: Color(0xFF2D3748),
+            ),
+            onPressed: _exportClassReport,
           ),
-          onPressed: _showMoreOptions,
-        ),
-      ],
+          IconButton(
+            icon: const Icon(
+              Icons.analytics_rounded,
+              color: Color(0xFF2D3748),
+            ),
+            onPressed: _showAnalytics,
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.more_vert_rounded,
+              color: Color(0xFF2D3748),
+            ),
+            onPressed: _showMoreOptions,
+          ),
+        ],
     );
   }
 
@@ -394,88 +581,95 @@ class _GradesScreenState extends State<GradesScreen>
   Widget _buildClassSelection() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedClass,
-                  isExpanded: true,
-                  items: _classes.map((className) {
-                    return DropdownMenuItem(
-                      value: className,
-                      child: Text(className),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedClass = value!;
-                    });
-                  },
+          // Class Selection Row
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedClass,
+                      isExpanded: true,
+                      menuMaxHeight: 200,
+                      items: _classes.map((className) {
+                        return DropdownMenuItem(
+                          value: className,
+                          child: Text(className),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedClass = value!;
+                        });
+                      },
+                    ),
+                  ),
                 ),
               ),
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedSubject,
+                      isExpanded: true,
+                      menuMaxHeight: 200,
+                      items: _subjects.map((subject) {
+                        return DropdownMenuItem(
+                          value: subject,
+                          child: Text(subject),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedSubject = value!;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedSubject,
-                  isExpanded: true,
-                  items: _subjects.map((subject) {
-                    return DropdownMenuItem(
-                      value: subject,
-                      child: Text(subject),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedSubject = value!;
-                    });
-                  },
-                ),
-              ),
+          const SizedBox(height: 12),
+          // Term Selection Row
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedTerm,
-                  isExpanded: true,
-                  items: _terms.map((term) {
-                    return DropdownMenuItem(
-                      value: term,
-                      child: Text(term),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedTerm = value!;
-                    });
-                  },
-                ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedTerm,
+                isExpanded: true,
+                menuMaxHeight: 200,
+                items: _terms.map((term) {
+                  return DropdownMenuItem(
+                    value: term,
+                    child: Text(term),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedTerm = value!;
+                  });
+                },
               ),
             ),
           ),
@@ -672,7 +866,17 @@ class _GradesScreenState extends State<GradesScreen>
   }
 
   Widget _buildAssessmentWeights() {
-    final weights = _students.isNotEmpty ? _students.first['weights'] as Map<String, dynamic> : {};
+    // Use standard weights if no students or use first student's weights
+    final Map<String, dynamic> weights = _students.isNotEmpty 
+        ? _students.first['weights'] as Map<String, dynamic>
+        : {
+            'quizzes': 0.20,
+            'assignments': 0.25,
+            'tests': 0.35,
+            'projects': 0.15,
+            'participation': 0.03,
+            'attendance': 0.02,
+          };
     
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -1036,6 +1240,7 @@ class _GradesScreenState extends State<GradesScreen>
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
+      heroTag: "grades_fab", // Add unique hero tag
       onPressed: _addNewAssessment,
       backgroundColor: AppTheme.primaryColor,
       icon: const Icon(Icons.add_rounded, color: Colors.white),
@@ -1049,7 +1254,8 @@ class _GradesScreenState extends State<GradesScreen>
   // Helper Methods
   double _calculateAverage(dynamic scores) {
     if (scores is List && scores.isNotEmpty) {
-      return scores.cast<num>().reduce((a, b) => a + b) / scores.length;
+      final numList = scores.cast<num>();
+      return numList.reduce((a, b) => a + b) / numList.length;
     }
     return 0.0;
   }
@@ -1114,10 +1320,16 @@ class _GradesScreenState extends State<GradesScreen>
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.8,
-        maxChildSize: 0.9,
+        initialChildSize: 0.9,
+        maxChildSize: 0.95,
         minChildSize: 0.5,
         builder: (context, scrollController) {
+          final cumulativeGrade = _calculateCumulativeGrade(student);
+          final letterGrade = _getLetterGrade(cumulativeGrade);
+          final gradeColor = _getGradeColor(cumulativeGrade);
+          final assessments = student['assessments'] as Map<String, dynamic>;
+          final trends = student['trends'] as List<dynamic>;
+
           return Container(
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
@@ -1135,24 +1347,131 @@ class _GradesScreenState extends State<GradesScreen>
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  '${student['name']} - Detailed Report',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF2D3748),
-                  ),
+                
+                // Student Header
+                Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: gradeColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Center(
+                        child: Text(
+                          student['avatar'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: gradeColor,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            student['name'],
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF2D3748),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Roll No: ${student['rollNumber']} • $_selectedClass • $_selectedSubject',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: gradeColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            letterGrade,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: gradeColor,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${cumulativeGrade.toStringAsFixed(1)}%',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: gradeColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 24),
+
+                // Action Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => _printStudentReport(student),
+                        icon: const Icon(Icons.print_rounded, size: 16),
+                        label: const Text('Print Report'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _exportStudentReport(student),
+                        icon: const Icon(Icons.download_rounded, size: 16),
+                        label: const Text('Export PDF'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.primaryColor,
+                          side: BorderSide(color: AppTheme.primaryColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+                
                 Expanded(
                   child: SingleChildScrollView(
                     controller: scrollController,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Detailed assessment breakdown would go here
+                        // Assessment Overview
                         const Text(
-                          'Assessment Breakdown',
+                          'Assessment Overview',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
@@ -1160,7 +1479,183 @@ class _GradesScreenState extends State<GradesScreen>
                           ),
                         ),
                         const SizedBox(height: 16),
-                        // Add detailed breakdown here
+                        
+                        // Assessment Cards
+                        _buildDetailedAssessmentCard('Quizzes', assessments['quizzes'], 0.20, Icons.quiz_rounded, AppTheme.primaryColor),
+                        const SizedBox(height: 12),
+                        _buildDetailedAssessmentCard('Assignments', assessments['assignments'], 0.25, Icons.assignment_rounded, AppTheme.warningColor),
+                        const SizedBox(height: 12),
+                        _buildDetailedAssessmentCard('Tests', assessments['tests'], 0.35, Icons.assignment_turned_in_rounded, AppTheme.errorColor),
+                        const SizedBox(height: 12),
+                        _buildDetailedAssessmentCard('Projects', assessments['projects'], 0.15, Icons.folder_special_rounded, AppTheme.successColor),
+                        const SizedBox(height: 12),
+                        
+                        // Participation & Attendance
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildSimpleAssessmentCard('Participation', assessments['participation'], 0.03, Icons.record_voice_over_rounded, Colors.purple),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildSimpleAssessmentCard('Attendance', assessments['attendance'], 0.02, Icons.event_available_rounded, Colors.blue),
+                            ),
+                          ],
+                        ),
+                        
+                        const SizedBox(height: 24),
+                        
+                        // Progress Trend
+                        const Text(
+                          'Progress Trend',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF2D3748),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.trending_up_rounded, color: _getTrendColor(trends), size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _getTrendDirection(trends),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: _getTrendColor(trends),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    '${trends.first}% → ${trends.last}%',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                height: 60,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: trends.asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final value = entry.value as num;
+                                    final height = (value / 100) * 50;
+                                    final isLast = index == trends.length - 1;
+                                    
+                                    return Expanded(
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              height: height,
+                                              decoration: BoxDecoration(
+                                                color: isLast ? gradeColor : gradeColor.withOpacity(0.6),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              'M${index + 1}',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 24),
+                        
+                        // Grade Calculation
+                        const Text(
+                          'Grade Calculation',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF2D3748),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              _buildCalculationRow('Quizzes', _calculateAverage(assessments['quizzes']), 0.20),
+                              _buildCalculationRow('Assignments', _calculateAverage(assessments['assignments']), 0.25),
+                              _buildCalculationRow('Tests', _calculateAverage(assessments['tests']), 0.35),
+                              _buildCalculationRow('Projects', _calculateAverage(assessments['projects']), 0.15),
+                              _buildCalculationRow('Participation', assessments['participation'], 0.03),
+                              _buildCalculationRow('Attendance', assessments['attendance'], 0.02),
+                              const Divider(height: 32),
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Final Grade:',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF2D3748),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    '${cumulativeGrade.toStringAsFixed(1)}% ($letterGrade)',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: gradeColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1184,11 +1679,11 @@ class _GradesScreenState extends State<GradesScreen>
   }
 
   void _addNewAssessment() {
-    // Add new assessment logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Create new assessment'),
-        backgroundColor: AppTheme.primaryColor,
+    // Navigate to assignments screen to create new assessment
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AssignmentsScreen(),
       ),
     );
   }
@@ -1220,6 +1715,545 @@ class _GradesScreenState extends State<GradesScreen>
         content: Text('Sort options'),
         backgroundColor: AppTheme.primaryColor,
       ),
+    );
+  }
+
+  // Helper methods for detailed student view
+  Widget _buildDetailedAssessmentCard(String title, dynamic scores, double weight, IconData icon, Color color) {
+    final scoresList = scores is List ? scores.cast<num>() : <num>[];
+    final average = scoresList.isEmpty ? 0.0 : scoresList.reduce((a, b) => a + b) / scoresList.length;
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${(weight * 100).toInt()}%',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Average: ${average.toStringAsFixed(1)}%',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: color,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Count: ${scoresList.length}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (scoresList.isNotEmpty)
+                Expanded(
+                  child: Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    alignment: WrapAlignment.end,
+                    children: scoresList.map((score) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _getGradeColor(score.toDouble()).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '${score.toInt()}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: _getGradeColor(score.toDouble()),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSimpleAssessmentCard(String title, dynamic score, double weight, IconData icon, Color color) {
+    final scoreValue = score is num ? score.toDouble() : 0.0;
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 16),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${scoreValue.toStringAsFixed(0)}%',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Weight: ${(weight * 100).toInt()}%',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalculationRow(String title, dynamic score, double weight) {
+    final scoreValue = score is num ? score.toDouble() : 0.0;
+    final contribution = scoreValue * weight;
+    
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2D3748),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              '${scoreValue.toStringAsFixed(1)}%',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF4A5568),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              '×${(weight * 100).toInt()}%',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF4A5568),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              '${contribution.toStringAsFixed(2)}',
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2D3748),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Export and Print Methods
+  void _printClassReport() {
+    HapticFeedback.lightImpact();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.print_rounded, color: AppTheme.primaryColor),
+            const SizedBox(width: 8),
+            const Text('Print Class Report'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Print cumulative assessment report for $_selectedClass?'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Class: $_selectedClass'),
+                  Text('Subject: $_selectedSubject'),
+                  Text('Term: $_selectedTerm'),
+                  Text('Students: ${_students.length}'),
+                  Text('Average: ${_classAverage.toStringAsFixed(1)}%'),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Printing $_selectedClass report...'),
+                  backgroundColor: AppTheme.successColor,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+            ),
+            child: const Text(
+              'Print',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _exportClassReport() {
+    HapticFeedback.lightImpact();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Export $_selectedClass Report',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 20),
+            _buildExportOption(
+              Icons.picture_as_pdf_rounded,
+              'Export as PDF',
+              'Complete assessment report with charts',
+              () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Exporting $_selectedClass report as PDF...'),
+                    backgroundColor: AppTheme.successColor,
+                  ),
+                );
+              },
+            ),
+            _buildExportOption(
+              Icons.table_chart_rounded,
+              'Export as Excel',
+              'Spreadsheet with all student data',
+              () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Exporting $_selectedClass report as Excel...'),
+                    backgroundColor: AppTheme.successColor,
+                  ),
+                );
+              },
+            ),
+            _buildExportOption(
+              Icons.share_rounded,
+              'Share Report',
+              'Share via email or messaging',
+              () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Sharing $_selectedClass report...'),
+                    backgroundColor: AppTheme.successColor,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _printStudentReport(Map<String, dynamic> student) {
+    HapticFeedback.lightImpact();
+    Navigator.pop(context); // Close the student details modal
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.print_rounded, color: AppTheme.primaryColor),
+            const SizedBox(width: 8),
+            const Text('Print Student Report'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Print detailed assessment report for ${student['name']}?'),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Student: ${student['name']}'),
+                  Text('Roll No: ${student['rollNumber']}'),
+                  Text('Class: $_selectedClass'),
+                  Text('Subject: $_selectedSubject'),
+                  Text('Grade: ${_calculateCumulativeGrade(student).toStringAsFixed(1)}% (${_getLetterGrade(_calculateCumulativeGrade(student))})'),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Printing ${student['name']} report...'),
+                  backgroundColor: AppTheme.successColor,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+            ),
+            child: const Text(
+              'Print',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _exportStudentReport(Map<String, dynamic> student) {
+    HapticFeedback.lightImpact();
+    Navigator.pop(context); // Close the student details modal
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Export ${student['name']} Report',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 20),
+            _buildExportOption(
+              Icons.picture_as_pdf_rounded,
+              'Export as PDF',
+              'Complete assessment report with progress charts',
+              () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Exporting ${student['name']} report as PDF...'),
+                    backgroundColor: AppTheme.successColor,
+                  ),
+                );
+              },
+            ),
+            _buildExportOption(
+              Icons.email_rounded,
+              'Email to Parent',
+              'Send report directly to parent\'s email',
+              () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Emailing ${student['name']} report to parent...'),
+                    backgroundColor: AppTheme.successColor,
+                  ),
+                );
+              },
+            ),
+            _buildExportOption(
+              Icons.share_rounded,
+              'Share Report',
+              'Share via messaging or other apps',
+              () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Sharing ${student['name']} report...'),
+                    backgroundColor: AppTheme.successColor,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExportOption(IconData icon, String title, String subtitle, VoidCallback onTap) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: AppTheme.primaryColor),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF2D3748),
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          fontSize: 12,
+          color: Colors.grey.shade600,
+        ),
+      ),
+      onTap: onTap,
     );
   }
 
